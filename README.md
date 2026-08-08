@@ -13,6 +13,16 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 - 发送时文件复制到 `<会话工作区>/.dsh/tmp/attachments/<session>/<send>/`，绝对路径随消息前置给模型，无权限问题
 - 设置面板：附件用量统计与按会话/工作区清理（所有权标记保护，二次确认）
 
+## 与 dsh-vision 协作：截图识别
+
+配合 [dsh-external/dsh-vision](https://github.com/dsh-external/dsh-vision) 插件（注册 `view_image` 工具，桥接任意 OpenAI 兼容 VLM，默认智谱免费 `glm-4.6v-flash`），本插件的粘贴/拖拽截图可以**直接识别**：
+
+1. 截图（Win+Shift+S）→ 粘贴或拖入 DSH
+2. 发送后截图复制进工作区附件目录
+3. 模型看到附件路径 → 调用 `view_image` → VLM 返回图片内容（OCR 提取文字、读图表、识别 UI 布局等）
+
+两个插件零耦合：本插件负责"文件进对话"，dsh-vision 负责"看图"，通过工作区附件路径衔接。
+
 ## 附件消息协议
 
 附件块以显式标记界定（模型可见文本，气泡折叠识别用）：
