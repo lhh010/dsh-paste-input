@@ -1,16 +1,34 @@
 # dsh-paste-input
 
-DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **拖拽** + **选择文件/文件夹**，发送时复制进会话工作区临时附件目录。
+DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + **选择文件/文件夹**，发送时复制进会话工作区临时附件目录，并把对话气泡里的附件文本块**折叠为文件 chip**。
 
-派生自 [dsh-external/dsh-multimedia-webui-input](https://github.com/dsh-external/dsh-multimedia-webui-input)（MIT），在其基础上新增剪贴板粘贴输入与首次告知弹窗。
+派生自 [dsh-external/dsh-multimedia-webui-input](https://github.com/dsh-external/dsh-multimedia-webui-input)（MIT），在其基础上新增剪贴板粘贴输入、首次告知弹窗与气泡附件折叠。
 
 ## 能力
 
 - **Ctrl+V 粘贴**：粘贴截图/复制的图片/文件 → 作为附件加入输入框（首次粘贴弹出告知弹窗，可勾选"不再提示"，选择持久化在浏览器 localStorage）
-- **拖拽**：文件/文件夹拖入输入框区域即加入附件
+- **全页面拖拽**：文件/文件夹拖到页面任意位置（聊天区、空白处、输入框）即加入附件；文本/链接拖拽保持浏览器默认行为
 - **选择**：输入框左侧回形针按钮 → 选择文件 / 选择文件夹
+- **气泡折叠**：发送后，消息气泡里冗长的附件路径文本块（含 `==== DSH_PASTE_INPUT_V1 ====` 标记协议）自动折叠为 📎 文件 chip；你在 chip 前后输入的文字原样保留；悬停 chip 显示完整原始附件块（路径/清单/文件列表），点击 chip 复制完整路径
 - 发送时文件复制到 `<会话工作区>/.dsh/tmp/attachments/<session>/<send>/`，绝对路径随消息前置给模型，无权限问题
 - 设置面板：附件用量统计与按会话/工作区清理（所有权标记保护，二次确认）
+
+## 附件消息协议
+
+附件块以显式标记界定（模型可见文本，气泡折叠识别用）：
+
+```
+==== DSH_PASTE_INPUT_V1 ====
+<附件根目录绝对路径>
+
+Files: N
+Manifest: .dsh-paste-input.json
+Attached files (paths are relative to the root above):
+- "file.txt" (2.0 KiB)
+==== END DSH_PASTE_INPUT ====
+```
+
+仅支持标记格式（历史无标记消息不折叠）。标记前后各带空行，保证用户输入的文字与标记不在同一行。
 
 ## 限制
 
