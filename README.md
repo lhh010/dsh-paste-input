@@ -4,6 +4,10 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 
 派生自 [dsh-external/dsh-multimedia-webui-input](https://github.com/dsh-external/dsh-multimedia-webui-input)（MIT），在其基础上新增剪贴板粘贴输入、首次告知弹窗与气泡附件折叠。
 
+## 版本兼容 / Version compatibility
+
+兼容 DSH snapshot0808（`snapshots/20260808T121140Z-7f25d3e98c`）：纯浏览器端插件，注册的槽位（`conversation.input.left` / `conversation.input.dock` / `settings.section`）与依赖服务（`slots`/`conversation`/`sessions`/`slash`）在 0808 上均保持声明，实机加载已验证。
+
 ## 能力
 
 - **Ctrl+V 粘贴**：粘贴截图/复制的图片/文件 → 作为附件加入输入框（首次粘贴弹出告知弹窗，可勾选"不再提示"，选择持久化在浏览器 localStorage）
