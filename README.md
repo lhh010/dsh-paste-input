@@ -6,7 +6,13 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 
 ## 版本兼容 / Version compatibility
 
-兼容 DSH snapshot0808（`snapshots/20260808T121140Z-7f25d3e98c`）：纯浏览器端插件，注册的槽位（`conversation.input.left` / `conversation.input.dock` / `settings.section`）与依赖服务（`slots`/`conversation`/`sessions`/`slash`）在 0808 上均保持声明，实机加载已验证。
+兼容 DSH snapshot0808（`snapshots/20260808T121140Z-7f25d3e98c`）与 snapshot0809（`snapshots/20260809T140917Z-a6bb5a95ba`）：纯浏览器端插件，注册的槽位（`conversation.input.left` / `conversation.input.dock` / `settings.section`）与依赖服务（`slots`/`conversation`/`sessions`/`slash`）在 0808/0809 上均保持声明，0809 实机验证——粘贴 → 复制进工作区附件目录 → 气泡折叠 chip 全链路可用。
+
+### 0809 兼容要点（实机验证）
+
+- **加载机制变化**：0809 重构了客户端插件机制——旧的 `dsh.plugin.json` 清单 + `resolveClientPath`（`packages/plugin/plugin`）已删除，改为 **package.json 的 `dshClient` 声明**（`platform: 'web'`，可选 `inject`/`immediately`）+ `exports["./client"]` 指向构建产物；宿主扫描 loader 条目组成 boot 图，Web 端从 `/plugins/<id>/client.js` 拉取。本插件 package.json 已满足该声明，无需改动。
+- 附件消息协议（`==== DSH_PASTE_INPUT_V1 ====` 标记）与 `.dsh/tmp/attachments/<session>/<send>/` 目录逻辑不依赖快照内部实现，0809 实测全链路成功。
+- **构建要求**：0809 宿主在激活时校验 `dshClient` 包的构建产物，缺失会抛 `ClientPackageCompositionError` 并**拒绝启动 `dsh web`**——升级快照或改源码后必须重新 `pnpm run build` 再启动，否则浏览器拉到的是旧 `lib/client.js`。
 
 ## 能力
 
