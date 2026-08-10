@@ -6,7 +6,7 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 
 ## 版本兼容 / Version compatibility
 
-兼容 DSH snapshot0808（`snapshots/20260808T121140Z-7f25d3e98c`）与 snapshot0809（`snapshots/20260809T140917Z-a6bb5a95ba`）：纯浏览器端插件，注册的槽位（`conversation.input.left` / `conversation.input.dock` / `settings.section`）与依赖服务（`slots`/`conversation`/`sessions`/`slash`）在 0808/0809 上均保持声明，0809 实机验证——粘贴 → 复制进工作区附件目录 → 气泡折叠 chip 全链路可用。
+兼容 DSH snapshot0808（`snapshots/20260808T121140Z-7f25d3e98c`）、snapshot0809（`snapshots/20260809T140917Z-a6bb5a95ba`）与 snapshot0810（`snapshots/20260810T155924Z-8ec407cd64`）：纯浏览器端插件，注册的槽位（`conversation.input.left` / `conversation.input.dock` / `settings.section`）与依赖服务（`slots`/`conversation`/`sessions`/`slash`）在 0808/0809/0810 上均保持声明，0809 实机验证——粘贴 → 复制进工作区附件目录 → 气泡折叠 chip 全链路可用。
 
 ### 0809 兼容要点（实机验证）
 
@@ -14,7 +14,16 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 - 附件消息协议（`==== DSH_PASTE_INPUT_V1 ====` 标记）与 `.dsh/tmp/attachments/<session>/<send>/` 目录逻辑不依赖快照内部实现，0809 实测全链路成功。
 - **构建要求**：0809 宿主在激活时校验 `dshClient` 包的构建产物，缺失会抛 `ClientPackageCompositionError` 并**拒绝启动 `dsh web`**——升级快照或改源码后必须重新 `pnpm run build` 再启动，否则浏览器拉到的是旧 `lib/client.js`。
 
+### 0810 兼容要点（snapshot0810）
+
+- **元数据发现变化**：0810 的 ClientModuleHostService 在启动时扫描已加载插件的 package.json，但只读**嵌套 `dsh.client`**（`packages/client/modules/src/index.ts` 的 `resolveMeta`，`pkg.dsh.client`）；顶层 `dshClient` 字段读不到会静默丢出 boot 图——无日志、无报错，"启动顺利但插件全没"。本插件已从顶层 `dshClient` 迁移为嵌套 `dsh.client`（inject 原样保留）；`lib/client.js` 构建产物不变（package.json 不参与编译），symlink 安装改源仓库即生效，无需重装。
+
 ## 更新记录 / Changelog
+
+### 2026-08-11 · v0.1.2 — 客户端插件元数据迁移（snapshot0810）
+
+- **迁移**：package.json 从顶层 `dshClient` 声明迁移为嵌套 `dsh.client`（inject 原样保留）——0810 的 ClientModuleHostService 只读 `pkg.dsh.client`，旧字段会被静默忽略导致插件不进 boot 图
+- **验证**：DSH snapshot0810 实机验证通过（粘贴 → 复制进附件目录 → 气泡折叠 chip 全链路）
 
 ### 2026-08-10 · v0.1.1 — 修复气泡折叠 chip 显示位置错乱
 
