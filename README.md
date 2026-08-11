@@ -6,7 +6,7 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 
 ## 版本兼容 / Version compatibility
 
-兼容 DSH snapshot0808（`snapshots/20260808T121140Z-7f25d3e98c`）、snapshot0809（`snapshots/20260809T140917Z-a6bb5a95ba`）与 snapshot0810（`snapshots/20260810T155924Z-8ec407cd64`）：纯浏览器端插件，注册的槽位（`conversation.input.left` / `conversation.input.dock` / `settings.section`）与依赖服务（`slots`/`conversation`/`sessions`/`slash`）在 0808/0809/0810 上均保持声明，0809 实机验证——粘贴 → 复制进工作区附件目录 → 气泡折叠 chip 全链路可用。
+兼容 DSH snapshot0808（`snapshots/20260808T121140Z`）、snapshot0809（`snapshots/20260809T140917Z`）与 snapshot0810（`snapshots/20260810T155924Z`）：纯浏览器端插件，注册的槽位（`conversation.input.left` / `conversation.input.dock` / `settings.section`）与依赖服务（`slots`/`conversation`/`sessions`/`slash`）在 0808/0809/0810 上均保持声明，0809 实机验证——粘贴 → 复制进工作区附件目录 → 气泡折叠 chip 全链路可用。
 
 ### 0809 兼容要点（实机验证）
 
