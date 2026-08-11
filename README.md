@@ -8,7 +8,7 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 
 兼容 DSH snapshot0808（`snapshots/20260808T121140Z`）、snapshot0809（`snapshots/20260809T140917Z`）与 snapshot0810（`snapshots/20260810T155924Z`）：纯浏览器端插件，注册的槽位（`conversation.input.left` / `conversation.input.dock` / `settings.section`）与依赖服务（`slots`/`conversation`/`sessions`/`slash`）在 0808/0809/0810 上均保持声明，0809 实机验证——粘贴 → 复制进工作区附件目录 → 气泡折叠 chip 全链路可用。
 
-**npm 发版兼容**：兼容 DSH npm 基线 `0.0.1-20260810T155924Z`（snapshot0810 的 npm 发版）。实测：npm 基线安装（本插件无 peer 依赖，`npm install` 无需额外参数）后运行时加载与 `window.__DSH_BOOT__` 清单（0810 基线实机）均通过。
+**npm 发版兼容**：兼容 DSH npm 发版 `@deepseek-ai/dsh@0.0.1-rc.1`（即 snapshot0810 的 npm 发版；`npx -p @deepseek-ai/dsh@0.0.1-rc.1 dsh web` 可访问指定版本并启动，lib 生产模式）。实测（同源本地基线）：npm 基线安装（本插件无 peer 依赖，`npm install` 无需额外参数）后运行时加载与 `window.__DSH_BOOT__` 清单均通过。
 
 ### 0809 兼容要点（实机验证）
 
