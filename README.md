@@ -6,9 +6,9 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 
 ## 版本兼容 / Version compatibility
 
-兼容 DSH snapshot0808（`snapshots/20260808T121140Z`）、snapshot0809（`snapshots/20260809T140917Z`）、snapshot0810（`snapshots/20260810T155924Z`）与 snapshot0811（`snapshots/20260811T152241Z`）：纯浏览器端插件，注册的槽位（`conversation.input.left` / `conversation.input.dock` / `settings.section`）与依赖服务（`slots`/`conversation`/`sessions`/`slash`）在 0808~0811 上均保持声明，0809 实机验证——粘贴 → 复制进工作区附件目录 → 气泡折叠 chip 全链路可用；0811 实机 boot 验证通过（见下）。
+兼容 DSH snapshot0808（`snapshots/20260808T121140Z`）、snapshot0809（`snapshots/20260809T140917Z`）、snapshot0810（`snapshots/20260810T155924Z`）、snapshot0811（`snapshots/20260811T152241Z`）与最终快照 snapshot0812（`snapshots/20260812T172954Z-final`）：注册的槽位（`conversation.input.left` / `conversation.input.dock` / `settings.section`）在 0808~0812 上均保持声明；依赖服务在 0812 经历官方更名——`slash` → `inputTriggers`（client 侧，随包名 `@deepseek-ai/dsh-client-ui-slash` → `@deepseek-ai/dsh-client-ui-input-trigger` 一并迁移）、host 侧 `httpServer` → `webServer`，本插件 v0.1.3 已同步迁移（lib 两半 + `dsh.client` 元数据，见下）。0809 实机验证——粘贴 → 复制进工作区附件目录 → 气泡折叠 chip 全链路可用；0811 与 0812 最终快照实机 boot 验证通过（见下）。
 
-**npm 发版兼容**：兼容 DSH npm 发版 `@deepseek-ai/dsh@0.0.1-rc.2`（即 snapshot0811 的 npm 发版；`npx -p @deepseek-ai/dsh@0.0.1-rc.2 dsh web` 可访问指定版本并启动，lib 生产模式）。实测（npm 基线）：node 半与 client 半在 rc.2 consumer 中加载/注册成功。本插件**无任何 cordis 依赖**（无 peerDependencies；lib 构建产物无 cordis 导入）——0811 的 cordis 更名（`cordis` → `@deepseek-ai/cordis`）对本插件零影响，`npm install` 无需额外参数。
+**npm 发版兼容**：兼容 DSH npm 发版 `@deepseek-ai/dsh@0.0.1-rc.5`（dist-tag `next`，即最终快照 snapshot0812 的 npm 发版；`npm exec -p @deepseek-ai/dsh@0.0.1-rc.5 -- dsh --profile web --port <port>` 可访问指定版本并启动，lib 生产模式），同时保持兼容 `@deepseek-ai/dsh@0.0.1-rc.2`（snapshot0811 的 npm 发版）。实测（npm rc.5 基线）：`dsh web` 启动后 `window.__DSH_BOOT__` 清单包含 `@dsh-community/dsh-paste-input`（inject: `dsh-client-runtime`/`dsh-client-ui-input-trigger`/`dsh-client-ui-conversation`/`dsh-client-ui-settings`），`/plugins/@dsh-community/dsh-paste-input/client.js` 返回 200；client 半经 `window.__ModuleLoader__.load` 正确注册，host 半的 `webServer` 上传路由在 rc.5 consumer 中加载成功。本插件**无任何 cordis 依赖**（无 peerDependencies；lib 构建产物无 cordis 导入）——0811 的 cordis 更名（`cordis` → `@deepseek-ai/cordis`）与本插件零影响，`npm install` 无需额外参数。
 
 ### 0809 兼容要点（实机验证）
 
@@ -25,7 +25,20 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 - **cordis 更名对本插件零影响**：0811 将 vendored cordis 由 `cordis@4.0.0-rc.7` 更名为 `@deepseek-ai/cordis@4.0.1-rc.1`（官方 client 包随之全部改从 `@deepseek-ai/cordis` 导入）。本插件不导入 cordis（无 peerDependencies、lib 构建产物无 cordis 引用），无需任何迁移。
 - **实机 boot 验证**：snapshot0811（`snapshots/20260811T152241Z`）web 启动后 `window.__DSH_BOOT__` 清单包含 `@dsh-community/dsh-paste-input`（inject: `dsh-client-runtime`/`dsh-client-ui-slash`/`dsh-client-ui-conversation`/`dsh-client-ui-settings`），`/plugins/@dsh-community/dsh-paste-input/client.js` 返回 200。本插件使用的槽位 `conversation.input.left`/`conversation.input.dock`（`ui-conversation` 声明）与 `settings.section`（`ui-settings` 声明）在 0811 上保持声明；`slash` 服务与 `window.__ModuleLoader__` 加载协议不变。
 
+### 0812/最终快照 兼容要点（snapshots/20260812T172954Z-final，实机验证）
+
+- **client 服务更名：`slash` → `inputTriggers`**：最终快照将输入触发服务由 `slash` 更名为 `inputTriggers`（随官方包 `@deepseek-ai/dsh-client-ui-slash` → `@deepseek-ai/dsh-client-ui-input-trigger` 一并改名，服务与 `registerSource` API 本身不变）。本插件 `lib/client.js` 已同步迁移 4 处（两个 inject 数组 + `ctx.get` + `registerSource` 调用），`dsh.client` 元数据的 inject 列表同步由 `dsh-client-ui-slash` 迁移为 `dsh-client-ui-input-trigger`。
+- **host 服务更名：`httpServer` → `webServer`**：最终快照将 host 侧 HTTP 路由注册服务由 `httpServer` 更名为 `webServer`（`packages/host/webserver` 提供，`register({ kind: 'prefix', path, handler })` API 不变）。本插件 `lib/index.js` 已同步迁移 2 处（inject 数组 + `ctx.webServer.register` 调用），上传路由照常注册。
+- **cordis 更名与本插件零影响**：与 0811 相同，本插件不导入 cordis（无 peerDependencies、lib 构建产物无 cordis 引用），`cordis` → `@deepseek-ai/cordis` 更名（npm rc.5 基线上为 `4.0.1-rc.4`）零影响，`npm install` 无需额外参数。
+- **实机 boot 验证**：最终快照（`snapshots/20260812T172954Z-final`）web 启动后 `window.__DSH_BOOT__` 清单包含 `@dsh-community/dsh-paste-input`；npm rc.5 consumer `dsh web` 启动后 boot 清单同样包含本插件（inject 已显示 `dsh-client-ui-input-trigger`），`/plugins/@dsh-community/dsh-paste-input/client.js` 返回 200，host 半 `webServer` 上传路由加载成功。本插件使用的槽位 `conversation.input.left`/`conversation.input.dock`（`ui-conversation` 声明）与 `settings.section`（`ui-settings` 声明）在最终快照与 rc.5 上保持声明；`inputTriggers` 服务与 `window.__ModuleLoader__` 加载协议不变。
+
 ## 更新记录 / Changelog
+
+### 2026-08-13 · v0.1.3 — 最终快照服务改名迁移（snapshot0812 + npm rc.5）
+
+- **迁移（client）**：`slash` → `inputTriggers`（lib/client.js 4 处：inject 数组 ×2 + `ctx.get` + `registerSource` 调用），`dsh.client` 元数据 inject 由 `@deepseek-ai/dsh-client-ui-slash` 迁移为 `@deepseek-ai/dsh-client-ui-input-trigger`——最终快照将输入触发服务与官方包一并更名，服务与 `registerSource` API 不变
+- **迁移（host）**：`httpServer` → `webServer`（lib/index.js 2 处：inject 数组 + `ctx.webServer.register` 调用）——最终快照将 host 侧 HTTP 路由服务更名，`register({ kind: 'prefix', path, handler })` API 不变
+- **验证**：DSH 最终快照（`snapshots/20260812T172954Z-final`）与 npm rc.5（`@deepseek-ai/dsh@0.0.1-rc.5`）consumer 实机 boot 验证通过（boot 清单包含本插件、client.js 返回 200、webServer 上传路由加载成功）
 
 ### 2026-08-11 · v0.1.2 — 客户端插件元数据迁移（snapshot0810）
 
