@@ -10,7 +10,13 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 
 兼容 DSH snapshot0808（`snapshots/20260808T121140Z`）、snapshot0809（`snapshots/20260809T140917Z`）、snapshot0810（`snapshots/20260810T155924Z`）、snapshot0811（`snapshots/20260811T152241Z`）与最终快照 snapshot0812（`snapshots/20260812T172954Z-final`）：注册的槽位（`conversation.input.left` / `conversation.input.dock` / `settings.section`）在 0808~0812 上均保持声明；依赖服务在 0812 经历官方更名——`slash` → `inputTriggers`（client 侧，随包名 `@deepseek-ai/dsh-client-ui-slash` → `@deepseek-ai/dsh-client-ui-input-trigger` 一并迁移）、host 侧 `httpServer` → `webServer`，本插件 v0.1.3 已同步迁移（lib 两半 + `dsh.client` 元数据，见下）。0809 实机验证——粘贴 → 复制进工作区附件目录 → 气泡折叠 chip 全链路可用；0811 与 0812 最终快照实机 boot 验证通过（见下）。
 
-**npm 发版兼容**：兼容 DSH npm 发版 `@deepseek-ai/dsh@0.0.1-rc.5`（dist-tag `next`，即最终快照 snapshot0812 的 npm 发版；`npm exec -p @deepseek-ai/dsh@0.0.1-rc.5 -- dsh --profile web --port <port>` 可访问指定版本并启动，lib 生产模式），同时保持兼容 `@deepseek-ai/dsh@0.0.1-rc.2`（snapshot0811 的 npm 发版）。实测（npm rc.5 基线）：`dsh web` 启动后 `window.__DSH_BOOT__` 清单包含 `@dsh-community/dsh-paste-input`（inject: `dsh-client-runtime`/`dsh-client-ui-input-trigger`/`dsh-client-ui-conversation`/`dsh-client-ui-settings`），`/plugins/@dsh-community/dsh-paste-input/client.js` 返回 200；client 半经 `window.__ModuleLoader__.load` 正确注册，host 半的 `webServer` 上传路由在 rc.5 consumer 中加载成功。本插件**无任何 cordis 依赖**（无 peerDependencies；lib 构建产物无 cordis 导入）——0811 的 cordis 更名（`cordis` → `@deepseek-ai/cordis`）与本插件零影响，`npm install` 无需额外参数。
+**npm 发版兼容**：兼容 DSH npm 发版 `@deepseek-ai/dsh@0.1.0-rc.8`（v0.1.4 实机验证，适配要点见下节），同时兼容 `@deepseek-ai/dsh@0.0.1-rc.5`（dist-tag `next`，即最终快照 snapshot0812 的 npm 发版；`npm exec -p @deepseek-ai/dsh@0.0.1-rc.5 -- dsh --profile web --port <port>` 可访问指定版本并启动，lib 生产模式）与 `@deepseek-ai/dsh@0.0.1-rc.2`（snapshot0811 的 npm 发版）。实测（npm rc.5 基线）：`dsh web` 启动后 `window.__DSH_BOOT__` 清单包含 `@dsh-community/dsh-paste-input`（inject: `dsh-client-runtime`/`dsh-client-ui-input-trigger`/`dsh-client-ui-conversation`/`dsh-client-ui-settings`），`/plugins/@dsh-community/dsh-paste-input/client.js` 返回 200；client 半经 `window.__ModuleLoader__.load` 正确注册，host 半的 `webServer` 上传路由在 rc.5 consumer 中加载成功。本插件**无任何 cordis 依赖**（无 peerDependencies；lib 构建产物无 cordis 导入）——0811 的 cordis 更名（`cordis` → `@deepseek-ai/cordis`）与本插件零影响，`npm install` 无需额外参数。
+
+### 0.1.0-rc.8 兼容要点（npm 发版 `@deepseek-ai/dsh@0.1.0-rc.8`，v0.1.4）
+
+- **输入机引用区间变化（修复删除失效）**：rc.8 的输入机把引用 occurrence 的行内区间从单个占位符字符改为完整显示文本（`@` + label，见 `referenceDraftText`）。v0.1.3 的 dock 删除逻辑只切除 1 个字符，点击 × 后 dock chip 消失但输入框内残留 `📎 image.png …` 之类的纯文本。v0.1.4 改用 `input.consumeToken({ kind: 'span', span: { start: occurrence.offset, end: occurrence.offset + occurrence.length, draftRev } })`（rc.8 `SessionInputShell` 的官方删除动词，带 CAS 保护）整段移除；无 `consumeToken` 的旧版本回退为按 `occurrence.length` 切除的 `setDraft`。
+- **官方文件外观（修复蓝色 @ + 回形针 + 蓝色文件名）**：rc.8 的 `insertReference` 支持官方 `appearance` 字段（`file`/`folder`/`session`，官方 `@file` 引用源即用 `appearance: 'file'`），composer 内联 chip 由官方样式渲染（隐藏 @ 字形 + 官方文件图标 + 蓝色文件名）。v0.1.3 自造的 `📎 ` emoji 前缀 + 8 字符截断 label 会渲染成「蓝色 @ + 回形针 + 蓝色文件名」，v0.1.4 移除 emoji 前缀，label 改为纯文件名（与官方 @file 引用一致），并附带 `appearance: 'file'`。
+- **槽位与服务不变**：`conversation.input.left` / `conversation.input.dock` / `conversation.input.right`（`kind: 'list'`, `scope: 'session'`）与 `settings.section` 在 rc.8 保持声明；`inputTriggers.registerSource`、`conversation.input.for(actx)`（返回带 `state`/`insertReference`/`consumeToken`/`setDraft` 的 facade）、host 侧 `webServer.register` 均不变。气泡折叠（`DSH_PASTE_INPUT_V1` 标记协议）与上传路由不受影响。
 
 ### 0809 兼容要点（实机验证）
 
@@ -35,6 +41,14 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 - **实机 boot 验证**：最终快照（`snapshots/20260812T172954Z-final`）web 启动后 `window.__DSH_BOOT__` 清单包含 `@dsh-community/dsh-paste-input`；npm rc.5 consumer `dsh web` 启动后 boot 清单同样包含本插件（inject 已显示 `dsh-client-ui-input-trigger`），`/plugins/@dsh-community/dsh-paste-input/client.js` 返回 200，host 半 `webServer` 上传路由加载成功。本插件使用的槽位 `conversation.input.left`/`conversation.input.dock`（`ui-conversation` 声明）与 `settings.section`（`ui-settings` 声明）在最终快照与 rc.5 上保持声明；`inputTriggers` 服务与 `window.__ModuleLoader__` 加载协议不变。
 
 ## 更新记录 / Changelog
+
+### 2026-08-20 · v0.1.4 — DSH 0.1.0-rc.8 适配（删除失效 + 内联 chip 外观）
+
+- **修复（删除失效）**：rc.8 输入机的引用 occurrence 占据 `@` + label 的完整行内区间（不再是 1 个占位符字符），v0.1.3 点击 dock chip 的 × 只删掉 `@` 一个字符，输入框内残留附件文本。现改用 rc.8 官方删除动词 `input.consumeToken`（span CAS 整段切除），旧宿主回退为按 `occurrence.length` 切除
+- **新增（整体编辑保护）**：内联附件 chip 的文件名不可单独删改（部分编辑会被拦截并自动选中整个 chip，下一次按键整体删除/替换），见上「内联 chip 整体编辑保护」
+- **修复（内联 chip 外观）**：移除自造的 `📎 ` emoji 前缀与 8 字符截断（在 rc.8 上渲染为「蓝色 @ + 回形针 + 蓝色文件名」），label 改为纯文件名并附带官方 `appearance: 'file'`，与官方 `@file` 引用的内联 chip 外观一致；完整路径与大小仍显示在输入框上方的 dock chip 中
+- **新增（内联 chip 整体编辑保护）**：输入框内的附件 chip 只能整体删除/替换，不能改写其中的文件名——在 composer textarea 上以捕获阶段拦截 `beforeinput`，任何只触碰 chip 一部分的编辑（在 label 中间打字、退格删一个字符、选半截替换）都被阻止并把选区扩展到整个 chip（下一次按键即整体删除/替换）；已完整选中整个 chip 的删除/替换放行。守卫通过 `textarea.value === draft` 识别 composer，不影响队列编辑等其他输入框；dock 的 × 按钮仍走 `consumeToken` 整段删除
+- **验证**：DSH npm `0.1.0-rc.8` 实机验证——粘贴/拖拽 → dock chip → × 删除后输入框同步清空；发送 → 复制进附件目录 → 气泡折叠 chip 全链路可用
 
 ### 2026-08-13 · v0.1.3 — 最终快照服务改名迁移（snapshot0812 + npm rc.5）
 
