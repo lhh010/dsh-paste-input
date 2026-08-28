@@ -12,6 +12,10 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 
 兼容 DSH snapshot0808（`snapshots/20260808T121140Z`）、snapshot0809（`snapshots/20260809T140917Z`）、snapshot0810（`snapshots/20260810T155924Z`）、snapshot0811（`snapshots/20260811T152241Z`）与最终快照 snapshot0812（`snapshots/20260812T172954Z-final`）：注册的槽位（`conversation.input.left` / `conversation.input.dock` / `settings.section`）在 0808~0812 上均保持声明；依赖服务在 0812 经历官方更名——`slash` → `inputTriggers`（client 侧，随包名 `@deepseek-ai/dsh-client-ui-slash` → `@deepseek-ai/dsh-client-ui-input-trigger` 一并迁移）、host 侧 `httpServer` → `webServer`，本插件 v0.1.3 已同步迁移（lib 两半 + `dsh.client` 元数据，见下）。0809 实机验证——粘贴 → 复制进工作区附件目录 → 气泡折叠 chip 全链路可用；0811 与 0812 最终快照实机 boot 验证通过（见下）。
 
+## 迁移指南（DSH 0.1.1-rc.1 → 0.1.2-alpha.1）
+
+本插件**无需迁移**：运行时仅依赖 `react` 与 `slots` / `conversation` / `sessions` / `inputTriggers` 服务及 `conversation.input.left` / `conversation.input.dock` / `settings.section` 槽位——这些服务与槽位在 0.1.2-alpha.1 全部保留，客户端 API 重构（`@deepseek-ai/dsh-client-runtime` 移除、`ConversationSnapshot` 视图化、`ctx.slots.inject` 注册范式）不触及本插件的自包含 bundle；直接安装最新 tag（`#v0.1.6`）即可。
+
 **npm 发版兼容**：兼容 DSH npm 发版 `@deepseek-ai/dsh@0.1.1-rc.1`（v0.1.5 实机 boot 验证：`dsh --profile web` 启动后 boot 清单包含本插件、`/plugins/@dsh-community/dsh-paste-input/client.js` 返回 200，依赖的 `inputTriggers`/`conversation.input` 门面与四个槽位在 0.1.1-rc.1 上保持不变）与 `@deepseek-ai/dsh@0.1.0-rc.8`（v0.1.4 实机验证，适配要点见下节），同时兼容 `@deepseek-ai/dsh@0.0.1-rc.5`（dist-tag `next`，即最终快照 snapshot0812 的 npm 发版；`npm exec -p @deepseek-ai/dsh@0.0.1-rc.5 -- dsh --profile web --port <port>` 可访问指定版本并启动，lib 生产模式）与 `@deepseek-ai/dsh@0.0.1-rc.2`（snapshot0811 的 npm 发版）。实测（npm rc.5 基线）：`dsh web` 启动后 `window.__DSH_BOOT__` 清单包含 `@dsh-community/dsh-paste-input`（inject: `dsh-client-runtime`/`dsh-client-ui-input-trigger`/`dsh-client-ui-conversation`/`dsh-client-ui-settings`），`/plugins/@dsh-community/dsh-paste-input/client.js` 返回 200；client 半经 `window.__ModuleLoader__.load` 正确注册，host 半的 `webServer` 上传路由在 rc.5 consumer 中加载成功。本插件**无任何 cordis 依赖**（无 peerDependencies；lib 构建产物无 cordis 导入）——0811 的 cordis 更名（`cordis` → `@deepseek-ai/cordis`）与本插件零影响，`npm install` 无需额外参数。
 
 ### 0.1.0-rc.8 兼容要点（npm 发版 `@deepseek-ai/dsh@0.1.0-rc.8`，v0.1.4）
