@@ -6,13 +6,39 @@ A file-input enhancement plugin for the DSH WebUI: **Ctrl+V paste** + **whole-pa
 
 Derived from [dsh-external/dsh-multimedia-webui-input](https://github.com/dsh-external/dsh-multimedia-webui-input) (MIT), adding clipboard paste input, a first-use notice dialog, and bubble attachment collapsing on top of it.
 
-## 版本兼容 / Version compatibility
+## Installation (profile mode)
 
-Compatible with DSH snapshot0808 (`snapshots/20260808T121140Z`), snapshot0809 (`snapshots/20260809T140917Z`), snapshot0810 (`snapshots/20260810T155924Z`), snapshot0811 (`snapshots/20260811T152241Z`) and the final snapshot snapshot0812 (`snapshots/20260812T172954Z-final`): the registered slots (`conversation.input.left` / `conversation.input.dock` / `settings.section`) remain declared on 0808~0812; on 0812 the dependent services went through official renames — `slash` → `inputTriggers` (client side, migrated together with the package rename `@deepseek-ai/dsh-client-ui-slash` → `@deepseek-ai/dsh-client-ui-input-trigger`) and host-side `httpServer` → `webServer`; this plugin's v0.1.3 has been migrated in sync (both halves of lib + the `dsh.client` metadata, see below). Verified in practice on 0809 — the full chain of paste → copy into the workspace attachments directory → bubble chip collapsing works; 0811 and the 0812 final snapshot passed real boot verification (see below).
+```sh
+# Option 1: pinned-tag git dependency (public mirror, recommended; github:lhh010/dsh-paste-input also works)
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.6'
 
-## Migration guide (DSH 0.1.1-rc.1 → 0.1.2-alpha.1)
+# Option 2: local link
+# dsh plugin --profile web add link:/path/to/dsh-paste-input
+```
 
-This plugin **needs no migration**: it only depends at runtime on `react` plus the `slots` / `conversation` / `sessions` / `inputTriggers` services and the `conversation.input.left` / `conversation.input.dock` / `settings.section` slots — all of which are preserved on 0.1.2-alpha.1, and the breaking Client rework (removal of `@deepseek-ai/dsh-client-runtime`, `ConversationSnapshot` view refactor, `ctx.slots.inject` registration form) does not touch this plugin's self-contained bundle; install the latest tag (`#v0.1.6`) directly.
+Append to `~/.dsh/profiles/web/cordis.patch.yml` (hot-reloaded, no restart needed):
+
+```yaml
+- insert:
+    - id: dsh-paste-input
+      name: '@dsh-community/dsh-paste-input'
+```
+
+> **Install tips**: pnpm 11 may block node-pty build scripts on first install — run `pnpm approve-builds --all` under `~/.dsh/profiles/web` and re-run the install; then **hard-refresh the browser** (Ctrl/Cmd+Shift+R).
+
+### Prompt install (let DSH install it)
+
+Paste this prompt into any DSH session and the agent installs it for you:
+
+> Install the dsh-paste-input plugin (DSH file-input enhancement plugin (paste/drag files)):
+> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.6'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
+> 2. Under `~/.dsh/profiles/web`, run `pnpm approve-builds --all` (approve the build scripts)
+> 3. Re-run the install command from step 1
+> 4. Remind me to hard-refresh the browser (Ctrl/Cmd+Shift+R)
+> On errors, first check the FAQ/known limitations in the README at https://github.com/lhh010/dsh-paste-input.
+
+
+ `ConversationSnapshot` view refactor, `ctx.slots.inject` registration form) does not touch this plugin's self-contained bundle; install the latest tag (`#v0.1.6`) directly.
 **npm release compatibility**: compatible with the DSH npm release `@deepseek-ai/dsh@0.1.1-rc.1` (v0.1.5 real boot verification: after `dsh --profile web` starts, the boot manifest includes this plugin and `/plugins/@dsh-community/dsh-paste-input/client.js` returns 200; the `inputTriggers`/`conversation.input` facades and the four slots are unchanged on 0.1.1-rc.1) and `@deepseek-ai/dsh@0.1.0-rc.8` (verified in practice with v0.1.4; adaptation notes in the section below), while remaining compatible with `@deepseek-ai/dsh@0.0.1-rc.5` (dist-tag `next`, i.e. the npm release of the final snapshot snapshot0812; `npm exec -p @deepseek-ai/dsh@0.0.1-rc.5 -- dsh --profile web --port <port>` accesses the specified version and starts it in lib production mode), while remaining compatible with `@deepseek-ai/dsh@0.0.1-rc.2` (the npm release of snapshot0811). Tested in practice (npm rc.5 baseline): after `dsh web` starts, the `window.__DSH_BOOT__` manifest includes `@dsh-community/dsh-paste-input` (inject: `dsh-client-runtime`/`dsh-client-ui-input-trigger`/`dsh-client-ui-conversation`/`dsh-client-ui-settings`), and `/plugins/@dsh-community/dsh-paste-input/client.js` returns 200; the client half registers correctly through `window.__ModuleLoader__.load`, and the host half's `webServer` upload route loads successfully in the rc.5 consumer. This plugin has **no cordis dependency at all** (no peerDependencies; the lib build output has no cordis imports) — the 0811 cordis rename (`cordis` → `@deepseek-ai/cordis`) has zero impact on this plugin, and `npm install` needs no extra flags.
 
 ### 0.1.0-rc.8 compatibility notes (npm release `@deepseek-ai/dsh@0.1.0-rc.8`, v0.1.4)

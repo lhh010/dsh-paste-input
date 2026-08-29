@@ -6,11 +6,38 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 
 派生自 [dsh-external/dsh-multimedia-webui-input](https://github.com/dsh-external/dsh-multimedia-webui-input)（MIT），在其基础上新增剪贴板粘贴输入、首次告知弹窗与气泡附件折叠。
 
-## 版本兼容 / Version compatibility
+## 安装（profile 模式）
 
-**alpha 发版兼容**：兼容 `dsh-v0.1.2-alpha.1`（GitHub tag `dsh-v0.1.2-alpha.1`，源码构建安装，不发布 npm；v0.1.6 验证：`dsh --profile web --dump-config` boot 组合包含 `@dsh-community/dsh-paste-input`；本插件运行时仅依赖 `react` 与 `slots` / `conversation` / `sessions` / `inputTriggers` 服务及 `conversation.input.left` / `conversation.input.dock` / `settings.section` 槽位——这些服务与槽位在该版本全部保留，客户端 API 重构（dsh-client-runtime 移除、Conversation 视图化）不触及本插件的自包含 bundle；v0.1.6 顺带从 `dsh.client.inject` 元数据中移除了已删除的 `@deepseek-ai/dsh-client-runtime` 声明）。
+```sh
+# 方式一：git 依赖固定 tag（公开镜像，推荐；也可用 github:lhh010/dsh-paste-input）
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.6'
 
-兼容 DSH snapshot0808（`snapshots/20260808T121140Z`）、snapshot0809（`snapshots/20260809T140917Z`）、snapshot0810（`snapshots/20260810T155924Z`）、snapshot0811（`snapshots/20260811T152241Z`）与最终快照 snapshot0812（`snapshots/20260812T172954Z-final`）：注册的槽位（`conversation.input.left` / `conversation.input.dock` / `settings.section`）在 0808~0812 上均保持声明；依赖服务在 0812 经历官方更名——`slash` → `inputTriggers`（client 侧，随包名 `@deepseek-ai/dsh-client-ui-slash` → `@deepseek-ai/dsh-client-ui-input-trigger` 一并迁移）、host 侧 `httpServer` → `webServer`，本插件 v0.1.3 已同步迁移（lib 两半 + `dsh.client` 元数据，见下）。0809 实机验证——粘贴 → 复制进工作区附件目录 → 气泡折叠 chip 全链路可用；0811 与 0812 最终快照实机 boot 验证通过（见下）。
+# 方式二：本地 link
+# dsh plugin --profile web add link:/path/to/dsh-paste-input
+```
+
+并在 `~/.dsh/profiles/web/cordis.patch.yml` 追加（热重载，无需重启）：
+
+```yaml
+- insert:
+    - id: dsh-paste-input
+      name: '@dsh-community/dsh-paste-input'
+```
+
+> **安装提示**：pnpm 11 首次安装可能拦截 node-pty 等构建脚本——在 `~/.dsh/profiles/web` 下执行 `pnpm approve-builds --all` 放行后重跑安装命令；装完**硬刷新浏览器**（Ctrl/Cmd+Shift+R）。
+
+### 提示词安装（让 DSH 自己装）
+
+把下面这段提示词发给任意一个 DSH 会话，模型会替你完成安装：
+
+> 帮我安装 dsh-paste-input 插件（DSH 文件输入增强：粘贴/拖拽文件），步骤：
+> 1. 执行 `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.6'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
+> 2. 在 `~/.dsh/profiles/web` 下执行 `pnpm approve-builds --all`（放行构建脚本）
+> 3. 再执行一次第 1 步的安装命令
+> 4. 完成后在 `~/.dsh/profiles/web/cordis.patch.yml` 追加 - insert 插件行（id: dsh-paste-input，name: '@dsh-community/dsh-paste-input'），并提醒我硬刷新浏览器（Ctrl/Cmd+Shift+R）
+> 遇到报错先查 https://github.com/lhh010/dsh-paste-input README 的常见问题/已知限制。
+
+hip 全链路可用；0811 与 0812 最终快照实机 boot 验证通过（见下）。
 
 ## 迁移指南（DSH 0.1.1-rc.1 → 0.1.2-alpha.1）
 
