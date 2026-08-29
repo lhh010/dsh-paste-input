@@ -118,8 +118,8 @@ Only the marked format is supported (historical unmarked messages are not collap
 ## Installation (profile mode)
 
 ```sh
-# Option 1: pinned-tag git dependency (public mirror, recommended; github:dsh-external/dsh-paste-input also works)
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:dsh-external/dsh-paste-input#v0.1.6'
+# Option 1: pinned-tag git dependency (public mirror, recommended; github:lhh010/dsh-paste-input also works)
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.6'
 
 # Option 2: local link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -140,11 +140,11 @@ Append to `~/.dsh/profiles/web/cordis.patch.yml` (hot-reloaded, no restart neede
 Paste this prompt into any DSH session and the agent installs it for you:
 
 > Install the dsh-paste-input plugin (DSH file-input enhancement plugin (paste/drag files)):
-> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:dsh-external/dsh-paste-input#v0.1.6'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
+> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.6'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
 > 2. Under `~/.dsh/profiles/web`, run `pnpm approve-builds --all` (approve the build scripts)
 > 3. Re-run the install command from step 1
 > 4. Remind me to hard-refresh the browser (Ctrl/Cmd+Shift+R)
-> On errors, first check the FAQ/known limitations in the README at https://github.com/dsh-external/dsh-paste-input.
+> On errors, first check the FAQ/known limitations in the README at https://github.com/lhh010/dsh-paste-input.
 
 ## License
 
