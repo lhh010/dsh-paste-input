@@ -17,7 +17,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 const REMOTES = [
   ['origin', 'dsh-external'],
   ['public', 'lhh010'],
-  ['omdsh', 'omdsh-dev'],
+  ['dev', 'omdsh-dev'],
 ]
 const DOCS = ['README.md', 'README.en.md', 'INSTALL.md', 'INSTALL.en.md']
 const ORGS = ['dsh-external', 'lhh010', 'omdsh-dev']
