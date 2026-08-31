@@ -10,7 +10,7 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 
 ```sh
 # 方式一：git 依赖固定 tag（公开镜像，推荐；也可用 github:lhh010/dsh-paste-input）
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.6'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.8'
 
 # 方式二：本地 link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -31,7 +31,7 @@ dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-p
 把下面这段提示词发给任意一个 DSH 会话，模型会替你完成安装：
 
 > 帮我安装 dsh-paste-input 插件（DSH 文件输入增强：粘贴/拖拽文件），步骤：
-> 1. 执行 `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.6'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
+> 1. 执行 `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.8'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
 > 2. 在 `~/.dsh/profiles/web` 下执行 `pnpm approve-builds --all`（放行构建脚本）
 > 3. 再执行一次第 1 步的安装命令
 > 4. 完成后在 `~/.dsh/profiles/web/cordis.patch.yml` 追加 - insert 插件行（id: dsh-paste-input，name: '@dsh-community/dsh-paste-input'），并提醒我硬刷新浏览器（Ctrl/Cmd+Shift+R）
@@ -41,7 +41,7 @@ hip 全链路可用；0811 与 0812 最终快照实机 boot 验证通过（见�
 
 ## 迁移指南（DSH 0.1.1-rc.1 → 0.1.2-alpha.1）
 
-本插件**无需迁移**：运行时仅依赖 `react` 与 `slots` / `conversation` / `sessions` / `inputTriggers` 服务及 `conversation.input.left` / `conversation.input.dock` / `settings.section` 槽位——这些服务与槽位在 0.1.2-alpha.1 全部保留，客户端 API 重构（`@deepseek-ai/dsh-client-runtime` 移除、`ConversationSnapshot` 视图化、`ctx.slots.inject` 注册范式）不触及本插件的自包含 bundle；直接安装最新 tag（`#v0.1.6`）即可。
+本插件**无需迁移**：运行时仅依赖 `react` 与 `slots` / `conversation` / `sessions` / `inputTriggers` 服务及 `conversation.input.left` / `conversation.input.dock` / `settings.section` 槽位——这些服务与槽位在 0.1.2-alpha.1 全部保留，客户端 API 重构（`@deepseek-ai/dsh-client-runtime` 移除、`ConversationSnapshot` 视图化、`ctx.slots.inject` 注册范式）不触及本插件的自包含 bundle；直接安装最新 tag（`#v0.1.8`）即可。
 
 **npm 发版兼容**：兼容 DSH npm 发版 `@deepseek-ai/dsh@0.1.1-rc.1`（v0.1.5 实机 boot 验证：`dsh --profile web` 启动后 boot 清单包含本插件、`/plugins/@dsh-community/dsh-paste-input/client.js` 返回 200，依赖的 `inputTriggers`/`conversation.input` 门面与四个槽位在 0.1.1-rc.1 上保持不变）与 `@deepseek-ai/dsh@0.1.0-rc.8`（v0.1.4 实机验证，适配要点见下节），同时兼容 `@deepseek-ai/dsh@0.0.1-rc.5`（dist-tag `next`，即最终快照 snapshot0812 的 npm 发版；`npm exec -p @deepseek-ai/dsh@0.0.1-rc.5 -- dsh --profile web --port <port>` 可访问指定版本并启动，lib 生产模式）与 `@deepseek-ai/dsh@0.0.1-rc.2`（snapshot0811 的 npm 发版）。实测（npm rc.5 基线）：`dsh web` 启动后 `window.__DSH_BOOT__` 清单包含 `@dsh-community/dsh-paste-input`（inject: `dsh-client-runtime`/`dsh-client-ui-input-trigger`/`dsh-client-ui-conversation`/`dsh-client-ui-settings`），`/plugins/@dsh-community/dsh-paste-input/client.js` 返回 200；client 半经 `window.__ModuleLoader__.load` 正确注册，host 半的 `webServer` 上传路由在 rc.5 consumer 中加载成功。本插件**无任何 cordis 依赖**（无 peerDependencies；lib 构建产物无 cordis 导入）——0811 的 cordis 更名（`cordis` → `@deepseek-ai/cordis`）与本插件零影响，`npm install` 无需额外参数。
 
@@ -149,7 +149,7 @@ Attached files (paths are relative to the root above):
 
 ```sh
 # 方式一：git 依赖固定 tag（公开镜像，推荐；也可用 github:lhh010/dsh-paste-input）
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.6'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.8'
 
 # 方式二：本地 link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -170,7 +170,7 @@ dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-p
 把下面这段提示词发给任意一个 DSH 会话，模型会替你完成安装：
 
 > 帮我安装 dsh-paste-input 插件（DSH 文件输入增强：粘贴/拖拽文件），步骤：
-> 1. 执行 `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.6'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
+> 1. 执行 `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.8'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
 > 2. 在 `~/.dsh/profiles/web` 下执行 `pnpm approve-builds --all`（放行构建脚本）
 > 3. 再执行一次第 1 步的安装命令
 > 4. 完成后在 `~/.dsh/profiles/web/cordis.patch.yml` 追加 - insert 插件行（id: dsh-paste-input，name: '@dsh-community/dsh-paste-input'），并提醒我硬刷新浏览器（Ctrl/Cmd+Shift+R）
