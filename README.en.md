@@ -6,6 +6,9 @@ A file-input enhancement plugin for the DSH WebUI: **Ctrl+V paste** + **whole-pa
 
 Derived from [dsh-external/dsh-multimedia-webui-input](https://github.com/dsh-external/dsh-multimedia-webui-input) (MIT), adding clipboard paste input, a first-use notice dialog, and bubble attachment collapsing on top of it.
 
+> **Pick the plugin version that matches your DSH** (a mismatch crashes: common symptom `useConversation is not a function`)
+> - DSH **0.1.1-rc.2** (npm latest): install the **old** version `'@dsh-external/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.5'`
+> - DSH **0.1.2-alpha.1 / alpha.2**: install the **new** version (the default command below)
 ## Installation (profile mode)
 
 ```sh
