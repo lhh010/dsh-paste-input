@@ -8,12 +8,12 @@ Derived from [dsh-external/dsh-multimedia-webui-input](https://github.com/dsh-ex
 
 > **Pick the plugin version that matches your DSH** (a mismatch crashes: common symptom `useConversation is not a function`)
 > - DSH **0.1.1-rc.2** (npm latest): install the **old** version `'@dsh-external/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.5'`
-> - DSH **0.1.2-alpha.1 / alpha.2**: install the **new** version (the default command below)
+> - DSH **0.1.2-alpha.1 / alpha.2 / alpha.3**: install the **new** version (the default command below)
 ## Installation (profile mode)
 
 ```sh
 # Option 1: pinned-tag git dependency (public mirror, recommended; github:lhh010/dsh-paste-input also works)
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.8'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.9'
 
 # Option 2: local link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -34,14 +34,14 @@ Append to `~/.dsh/profiles/web/cordis.patch.yml` (hot-reloaded, no restart neede
 Paste this prompt into any DSH session and the agent installs it for you:
 
 > Install the dsh-paste-input plugin (DSH file-input enhancement plugin (paste/drag files)):
-> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.8'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
+> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.9'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
 > 2. Under `~/.dsh/profiles/web`, run `pnpm approve-builds --all` (approve the build scripts)
 > 3. Re-run the install command from step 1
 > 4. Remind me to hard-refresh the browser (Ctrl/Cmd+Shift+R)
 > On errors, first check the FAQ/known limitations in the README at https://github.com/lhh010/dsh-paste-input.
 
 
- `ConversationSnapshot` view refactor, `ctx.slots.inject` registration form) does not touch this plugin's self-contained bundle; install the latest tag (`#v0.1.8`) directly.
+ `ConversationSnapshot` view refactor, `ctx.slots.inject` registration form) does not touch this plugin's self-contained bundle; install the latest tag (`#v0.1.9`) directly.
 **npm release compatibility**: compatible with the DSH npm release `@deepseek-ai/dsh@0.1.1-rc.1` (v0.1.5 real boot verification: after `dsh --profile web` starts, the boot manifest includes this plugin and `/plugins/@dsh-community/dsh-paste-input/client.js` returns 200; the `inputTriggers`/`conversation.input` facades and the four slots are unchanged on 0.1.1-rc.1) and `@deepseek-ai/dsh@0.1.0-rc.8` (verified in practice with v0.1.4; adaptation notes in the section below), while remaining compatible with `@deepseek-ai/dsh@0.0.1-rc.5` (dist-tag `next`, i.e. the npm release of the final snapshot snapshot0812; `npm exec -p @deepseek-ai/dsh@0.0.1-rc.5 -- dsh --profile web --port <port>` accesses the specified version and starts it in lib production mode), while remaining compatible with `@deepseek-ai/dsh@0.0.1-rc.2` (the npm release of snapshot0811). Tested in practice (npm rc.5 baseline): after `dsh web` starts, the `window.__DSH_BOOT__` manifest includes `@dsh-community/dsh-paste-input` (inject: `dsh-client-runtime`/`dsh-client-ui-input-trigger`/`dsh-client-ui-conversation`/`dsh-client-ui-settings`), and `/plugins/@dsh-community/dsh-paste-input/client.js` returns 200; the client half registers correctly through `window.__ModuleLoader__.load`, and the host half's `webServer` upload route loads successfully in the rc.5 consumer. This plugin has **no cordis dependency at all** (no peerDependencies; the lib build output has no cordis imports) — the 0811 cordis rename (`cordis` → `@deepseek-ai/cordis`) has zero impact on this plugin, and `npm install` needs no extra flags.
 
 ### 0.1.0-rc.8 compatibility notes (npm release `@deepseek-ai/dsh@0.1.0-rc.8`, v0.1.4)
@@ -148,7 +148,7 @@ Only the marked format is supported (historical unmarked messages are not collap
 
 ```sh
 # Option 1: pinned-tag git dependency (public mirror, recommended; github:lhh010/dsh-paste-input also works)
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.8'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.9'
 
 # Option 2: local link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -169,7 +169,7 @@ Append to `~/.dsh/profiles/web/cordis.patch.yml` (hot-reloaded, no restart neede
 Paste this prompt into any DSH session and the agent installs it for you:
 
 > Install the dsh-paste-input plugin (DSH file-input enhancement plugin (paste/drag files)):
-> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.8'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
+> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.9'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
 > 2. Under `~/.dsh/profiles/web`, run `pnpm approve-builds --all` (approve the build scripts)
 > 3. Re-run the install command from step 1
 > 4. Remind me to hard-refresh the browser (Ctrl/Cmd+Shift+R)
