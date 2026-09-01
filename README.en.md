@@ -13,7 +13,7 @@ Derived from [dsh-external/dsh-multimedia-webui-input](https://github.com/dsh-ex
 
 ```sh
 # Option 1: pinned-tag git dependency (public mirror, recommended; github:lhh010/dsh-paste-input also works)
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.10'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.11'
 
 # Option 2: local link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -34,7 +34,7 @@ Append to `~/.dsh/profiles/web/cordis.patch.yml` (hot-reloaded, no restart neede
 Paste this prompt into any DSH session and the agent installs it for you:
 
 > Install the dsh-paste-input plugin (DSH file-input enhancement plugin (paste/drag files)):
-> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.10'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
+> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.11'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
 > 2. Under `~/.dsh/profiles/web`, run `pnpm approve-builds --all` (approve the build scripts)
 > 3. Re-run the install command from step 1
 > 4. Remind me to hard-refresh the browser (Ctrl/Cmd+Shift+R)
@@ -75,6 +75,9 @@ Paste this prompt into any DSH session and the agent installs it for you:
 
 ## 更新记录 / Changelog
 
+### 2026-09-01 · v0.1.11 — version chip no longer fooled by GitHub CDN lag
+
+- **Fix**: in the minutes right after pushing a new tag, the GitHub tags API / raw CDN still serve the old tag, and the "already latest" chip displayed that stale REMOTE tag as the latest (e.g. running 0.1.10 while showing "latest 0.1.9"). It now shows whichever of the fetched tag and the running version is newer; the offline chip's retry path applies the same rule
 ### 2026-09-01 · v0.1.10 — fix broken dock removal + same-name auto-numbering
 
 - **Fix (removal → unavailable)**: on DSH 0.1.2-alpha the input machine's occurrence offset/length are **clipboard-projection coordinates** (a chip spans its full `[attachment: …]` text) while `consumeToken`'s span guard works in **detect-projection coordinates** (a chip is exactly one U+FFFC character) — the old code passed clipboard offsets straight through, the replace always failed, and the already-deleted record left the chip showing "unavailable" in the dock and resident in the composer. The span is now converted to detect coordinates (each earlier chip contributes length−1 fewer characters), with a setDraft whole-range slice fallback
@@ -154,7 +157,7 @@ Only the marked format is supported (historical unmarked messages are not collap
 
 ```sh
 # Option 1: pinned-tag git dependency (public mirror, recommended; github:lhh010/dsh-paste-input also works)
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.10'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.11'
 
 # Option 2: local link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -175,7 +178,7 @@ Append to `~/.dsh/profiles/web/cordis.patch.yml` (hot-reloaded, no restart neede
 Paste this prompt into any DSH session and the agent installs it for you:
 
 > Install the dsh-paste-input plugin (DSH file-input enhancement plugin (paste/drag files)):
-> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.10'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
+> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.11'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
 > 2. Under `~/.dsh/profiles/web`, run `pnpm approve-builds --all` (approve the build scripts)
 > 3. Re-run the install command from step 1
 > 4. Remind me to hard-refresh the browser (Ctrl/Cmd+Shift+R)
