@@ -13,7 +13,7 @@ Derived from [dsh-external/dsh-multimedia-webui-input](https://github.com/dsh-ex
 
 ```sh
 # Option 1: pinned-tag git dependency (public mirror, recommended; github:lhh010/dsh-paste-input also works)
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.11'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.12'
 
 # Option 2: local link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -34,7 +34,7 @@ Append to `~/.dsh/profiles/web/cordis.patch.yml` (hot-reloaded, no restart neede
 Paste this prompt into any DSH session and the agent installs it for you:
 
 > Install the dsh-paste-input plugin (DSH file-input enhancement plugin (paste/drag files)):
-> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.11'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
+> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.12'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
 > 2. Under `~/.dsh/profiles/web`, run `pnpm approve-builds --all` (approve the build scripts)
 > 3. Re-run the install command from step 1
 > 4. Remind me to hard-refresh the browser (Ctrl/Cmd+Shift+R)
@@ -75,6 +75,10 @@ Paste this prompt into any DSH session and the agent installs it for you:
 
 ## 更新记录 / Changelog
 
+### 2026-09-01 · v0.1.12 — version check caching / 403 fallback
+
+- **Fix (403 spam)**: when the GitHub tags API returns 403 (rate-limited / unauthenticated), the old code re-fetched on every page load and retry, flooding the console. Verdicts are now cached in localStorage per status: OK for 10 minutes, transient network failure 60s, hard 403 for 5 minutes — inside the window the check returns the cached verdict without touching the network; a manual "retry" still forces one fetch
+- **Fallback copy**: distinguishes "network unreachable" from "GitHub refused (rate-limit / 403)" — the latter shows "version check temporarily unavailable (GitHub refused), cached" instead of misattributing it to the network
 ### 2026-09-01 · v0.1.11 — version chip no longer fooled by GitHub CDN lag
 
 - **Fix**: in the minutes right after pushing a new tag, the GitHub tags API / raw CDN still serve the old tag, and the "already latest" chip displayed that stale REMOTE tag as the latest (e.g. running 0.1.10 while showing "latest 0.1.9"). It now shows whichever of the fetched tag and the running version is newer; the offline chip's retry path applies the same rule
@@ -157,7 +161,7 @@ Only the marked format is supported (historical unmarked messages are not collap
 
 ```sh
 # Option 1: pinned-tag git dependency (public mirror, recommended; github:lhh010/dsh-paste-input also works)
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.11'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.12'
 
 # Option 2: local link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -178,7 +182,7 @@ Append to `~/.dsh/profiles/web/cordis.patch.yml` (hot-reloaded, no restart neede
 Paste this prompt into any DSH session and the agent installs it for you:
 
 > Install the dsh-paste-input plugin (DSH file-input enhancement plugin (paste/drag files)):
-> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.11'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
+> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.12'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
 > 2. Under `~/.dsh/profiles/web`, run `pnpm approve-builds --all` (approve the build scripts)
 > 3. Re-run the install command from step 1
 > 4. Remind me to hard-refresh the browser (Ctrl/Cmd+Shift+R)
