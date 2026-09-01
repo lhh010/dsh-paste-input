@@ -13,7 +13,7 @@ Derived from [dsh-external/dsh-multimedia-webui-input](https://github.com/dsh-ex
 
 ```sh
 # Option 1: pinned-tag git dependency (public mirror, recommended; github:lhh010/dsh-paste-input also works)
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.9'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.10'
 
 # Option 2: local link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -34,7 +34,7 @@ Append to `~/.dsh/profiles/web/cordis.patch.yml` (hot-reloaded, no restart neede
 Paste this prompt into any DSH session and the agent installs it for you:
 
 > Install the dsh-paste-input plugin (DSH file-input enhancement plugin (paste/drag files)):
-> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.9'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
+> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.10'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
 > 2. Under `~/.dsh/profiles/web`, run `pnpm approve-builds --all` (approve the build scripts)
 > 3. Re-run the install command from step 1
 > 4. Remind me to hard-refresh the browser (Ctrl/Cmd+Shift+R)
@@ -75,6 +75,12 @@ Paste this prompt into any DSH session and the agent installs it for you:
 
 ## 更新记录 / Changelog
 
+### 2026-09-01 · v0.1.10 — fix broken dock removal + same-name auto-numbering
+
+- **Fix (removal → unavailable)**: on DSH 0.1.2-alpha the input machine's occurrence offset/length are **clipboard-projection coordinates** (a chip spans its full `[attachment: …]` text) while `consumeToken`'s span guard works in **detect-projection coordinates** (a chip is exactly one U+FFFC character) — the old code passed clipboard offsets straight through, the replace always failed, and the already-deleted record left the chip showing "unavailable" in the dock and resident in the composer. The span is now converted to detect coordinates (each earlier chip contributes length−1 fewer characters), with a setDraft whole-range slice fallback
+- **Fix (second paste errored / displaced the first)**: `insertReference`'s insertion point used `snapshot.draft.length` (clipboard-projection length); once a first attachment existed the point fell past the detect text and `The DSH composer changed before the attachment could be inserted` fired. The point is now folded into detect coordinates the same way, so consecutive pastes coexist
+- **Added (unified paste renaming)**: pasted files get a unified base name — images `paste_image.<ext>`, other files `paste_file.<ext>` (extension from the original name, falling back to the MIME map); collisions append `(2)`, `(3)`… (conflict set = live composer chips + records), and the rename carries into the upload path. **Only the paste path renames**; drops and the file/folder picker keep their real names
+- **Verification**: verified live — two consecutive screenshot pastes yield `paste_image.png` and `paste_image(2).png` side by side; dock × removal clears both views; node --check clean
 ### 2026-08-20 · v0.1.5 — Declare DSH 0.1.1-rc.1 compatibility (real boot verification)
 
 - **Verification**: real boot verification passed on DSH npm `0.1.1-rc.1` — the boot manifest includes this plugin and client.js returns 200; the v0.1.4 rc.8 adaptation (`consumeToken` whole-range removal, official `appearance: 'file'`, whole-chip edit protection) shows no regression on 0.1.1-rc.1 (the `inputTriggers.registerSource`, `conversation.input.for` facade, and the `conversation.input.left/dock` and `settings.section` slots are unchanged)
@@ -148,7 +154,7 @@ Only the marked format is supported (historical unmarked messages are not collap
 
 ```sh
 # Option 1: pinned-tag git dependency (public mirror, recommended; github:lhh010/dsh-paste-input also works)
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.9'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.10'
 
 # Option 2: local link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -169,7 +175,7 @@ Append to `~/.dsh/profiles/web/cordis.patch.yml` (hot-reloaded, no restart neede
 Paste this prompt into any DSH session and the agent installs it for you:
 
 > Install the dsh-paste-input plugin (DSH file-input enhancement plugin (paste/drag files)):
-> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.9'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
+> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.10'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
 > 2. Under `~/.dsh/profiles/web`, run `pnpm approve-builds --all` (approve the build scripts)
 > 3. Re-run the install command from step 1
 > 4. Remind me to hard-refresh the browser (Ctrl/Cmd+Shift+R)
