@@ -2,6 +2,8 @@
  # README.md is the default Chinese page; README.en.md is its English counterpart.
  # Values are git blob hashes from the last confirmed-consistent review.
 README.md: 
+ef7362272472edaab4c33c9a2f705e5f8644c472
 d8abacad7755502d17101d6b4f7ab538dbf16c31
 README.en.md: 
+6c2f4f9b1ea77b75e86730c414c7c380f8bafeac
 be4a46c54a52089ba05ce2cce4a36775c537f1c3
