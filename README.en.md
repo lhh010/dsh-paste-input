@@ -13,7 +13,7 @@ Derived from [dsh-external/dsh-multimedia-webui-input](https://github.com/dsh-ex
 
 ```sh
 # Option 1: pinned-tag git dependency (public mirror, recommended; github:lhh010/dsh-paste-input also works)
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.16'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.17'
 
 # Option 2: local link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -34,7 +34,7 @@ Append to `~/.dsh/profiles/web/cordis.patch.yml` (hot-reloaded, no restart neede
 Paste this prompt into any DSH session and the agent installs it for you:
 
 > Install the dsh-paste-input plugin (DSH file-input enhancement plugin (paste/drag files)):
-> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.16'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
+> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.17'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
 > 2. Under `~/.dsh/profiles/web`, run `pnpm approve-builds --all` (approve the build scripts)
 > 3. Re-run the install command from step 1
 > 4. Remind me to hard-refresh the browser (Ctrl/Cmd+Shift+R)
@@ -74,6 +74,14 @@ Paste this prompt into any DSH session and the agent installs it for you:
 - **Real boot verification**: after the final snapshot (`snapshots/20260812T172954Z-final`) web starts, the `window.__DSH_BOOT__` manifest includes `@dsh-community/dsh-paste-input`; after the npm rc.5 consumer's `dsh web` starts, the boot manifest likewise includes this plugin (inject now shows `dsh-client-ui-input-trigger`), `/plugins/@dsh-community/dsh-paste-input/client.js` returns 200, and the host half's `webServer` upload route loads successfully. The slots this plugin uses — `conversation.input.left`/`conversation.input.dock` (declared by `ui-conversation`) and `settings.section` (declared by `ui-settings`) — remain declared on the final snapshot and rc.5; the `inputTriggers` service and the `window.__ModuleLoader__` loading protocol are unchanged.
 
 ## 更新记录 / Changelog
+
+### 2026-09-03 · v0.1.17 — image/GIF hover preview + click viewer (zoom & pan)
+
+- **New (hover thumbnail)**: image attachments (png/jpg/jpeg/gif/webp/bmp/avif/ico) pop a small preview card on chip hover — animated GIFs play as-is. Works on both the composer's pending chips (local bytes via blob URL) and the bubble's sent chips (host reads the file back after ownership-marker validation)
+- **New (click viewer)**: clicking an image chip opens a fullscreen viewer — cursor-centered wheel zoom (20%–800%), left-drag panning, double-click toggles 1×/2×, `+`/`-`/`0`/`Esc` shortcuts, and a toolbar with the zoom percentage, reset, copy-full-path, and close; GIFs keep playing in the viewer
+- **New host route (read-only)** `GET /dsh-paste-input/v1/file?root=<send dir>&path=<relative path>`: serves only image files **declared in the send's ownership marker** (`.dsh-paste-input.json`; SVG excluded to avoid same-origin script execution), with path resolution confined to the send directory and a 64 MiB per-file cap
+- Non-image chips keep their behavior (hover shows the raw attachment block, click copies the path); the image chip's copy-path action moves into the viewer toolbar
+- **Fix (dock chip crash, latent since v0.1.16)**: the composer dock chip's remove button referenced `busy`, a variable from other components' scope — the moment a chip rendered it threw a ReferenceError and the error boundary swallowed the whole dock slot (symptom: the dock's attachment chips vanish); the dangling reference is removed
 
 ### 2026-09-02 · v0.1.16 — fix AttachButton crash + version check moves to jsdelivr
 
@@ -129,6 +137,7 @@ Paste this prompt into any DSH session and the agent installs it for you:
 - **Whole-page drag & drop**: drag files/folders to anywhere on the page (chat area, blank space, input box) to add them as attachments; dragging text/links keeps the browser's default behavior
 - **Select**: the paperclip button on the left of the input box → select files / select folders
 - **Bubble collapsing**: after sending, the verbose attachment-path text block in the message bubble (carrying the `==== DSH_PASTE_INPUT_V1 ====` marker protocol) is automatically collapsed into a 📎 file chip; text you typed before and after the chip is preserved interleaved in original order (on multi-file sends, text and each file's chip alternate segment by segment, with each chip on its own line); hovering the chip shows the complete original attachment block (paths/manifest/file list), and clicking the chip copies the full path
+- **Image preview**: image/animated-GIF attachments pop a small thumbnail on chip hover (GIFs play as-is), and clicking the chip opens a fullscreen viewer — cursor-centered wheel zoom (20%–800%), drag panning, double-click 1×/2×, `+`/`-`/`0`/`Esc` shortcuts, copy-full-path in the toolbar. Both composer chips and sent-bubble chips are supported (the host reads sent files back after ownership-marker validation)
 - On send, files are copied to `<session workspace>/.dsh/tmp/attachments/<session>/<send>/`, and the absolute paths are prefixed to the message for the model — no permission issues
 - Settings panel: attachment usage statistics and cleanup per session/workspace (protected by ownership markers, with double confirmation)
 
@@ -168,7 +177,7 @@ Only the marked format is supported (historical unmarked messages are not collap
 
 ```sh
 # Option 1: pinned-tag git dependency (public mirror, recommended; github:lhh010/dsh-paste-input also works)
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.16'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.17'
 
 # Option 2: local link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -189,7 +198,7 @@ Append to `~/.dsh/profiles/web/cordis.patch.yml` (hot-reloaded, no restart neede
 Paste this prompt into any DSH session and the agent installs it for you:
 
 > Install the dsh-paste-input plugin (DSH file-input enhancement plugin (paste/drag files)):
-> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.16'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
+> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.17'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
 > 2. Under `~/.dsh/profiles/web`, run `pnpm approve-builds --all` (approve the build scripts)
 > 3. Re-run the install command from step 1
 > 4. Remind me to hard-refresh the browser (Ctrl/Cmd+Shift+R)

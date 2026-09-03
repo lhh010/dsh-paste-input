@@ -13,7 +13,7 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 
 ```sh
 # 方式一：git 依赖固定 tag（公开镜像，推荐；也可用 github:lhh010/dsh-paste-input）
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.16'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.17'
 
 # 方式二：本地 link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -34,7 +34,7 @@ dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-p
 把下面这段提示词发给任意一个 DSH 会话，模型会替你完成安装：
 
 > 帮我安装 dsh-paste-input 插件（DSH 文件输入增强：粘贴/拖拽文件），步骤：
-> 1. 执行 `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.16'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
+> 1. 执行 `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.17'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
 > 2. 在 `~/.dsh/profiles/web` 下执行 `pnpm approve-builds --all`（放行构建脚本）
 > 3. 再执行一次第 1 步的安装命令
 > 4. 完成后在 `~/.dsh/profiles/web/cordis.patch.yml` 追加 - insert 插件行（id: dsh-paste-input，name: '@dsh-community/dsh-paste-input'），并提醒我硬刷新浏览器（Ctrl/Cmd+Shift+R）
@@ -79,6 +79,14 @@ hip 全链路可用；0811 与 0812 最终快照实机 boot 验证通过（见�
 - **实机 boot 验证**：最终快照（`snapshots/20260812T172954Z-final`）web 启动后 `window.__DSH_BOOT__` 清单包含 `@dsh-community/dsh-paste-input`；npm rc.5 consumer `dsh web` 启动后 boot 清单同样包含本插件（inject 已显示 `dsh-client-ui-input-trigger`），`/plugins/@dsh-community/dsh-paste-input/client.js` 返回 200，host 半 `webServer` 上传路由加载成功。本插件使用的槽位 `conversation.input.left`/`conversation.input.dock`（`ui-conversation` 声明）与 `settings.section`（`ui-settings` 声明）在最终快照与 rc.5 上保持声明；`inputTriggers` 服务与 `window.__ModuleLoader__` 加载协议不变。
 
 ## 更新记录 / Changelog
+
+### 2026-09-03 · v0.1.17 — 图片/动图悬停预览 + 点击查看器（缩放/平移）
+
+- **新功能（悬停缩略图）**：图片类附件（png/jpg/jpeg/gif/webp/bmp/avif/ico）的 chip 悬停即弹出小预览卡，GIF 动图原样播放；输入框待发送 chip（本地字节，blob URL）与气泡内已发送 chip（宿主端按所有权标记校验后回读文件）都支持
+- **新功能（点击查看器）**：点击图片 chip 打开全屏查看器——滚轮以光标为中心缩放（20%–800%）、左键拖动上下左右平移、双击在 1×/2× 间切换、`+`/`-`/`0`/`Esc` 快捷键、工具栏含缩放百分比/重置/复制完整路径/关闭；GIF 在查看器中持续播放
+- **宿主端新增只读路由** `GET /dsh-paste-input/v1/file?root=<发送目录>&path=<相对路径>`：仅服务**所有权标记（`.dsh-paste-input.json`）声明过的图片文件**（SVG 除外，避免同域脚本执行），路径解析约束在发送目录内，单文件 ≤64 MiB
+- 非图片 chip 行为不变（悬停显示原始附件块、点击复制路径）；图片 chip 的「复制路径」移入查看器工具栏
+- **修复（dock chip 崩溃，v0.1.16 遗留）**：输入框上方附件 dock 的删除按钮引用了不在本作用域的 `busy` 变量，chip 一渲染即 `ReferenceError`，整个 dock 槽位被错误边界吞掉（表现：dock 上的附件气泡消失）；已移除该悬空引用
 
 ### 2026-09-02 · v0.1.16 — 修复 AttachButton 崩溃 + 版本检查 403 改走 jsdelivr
 
@@ -143,6 +151,7 @@ hip 全链路可用；0811 与 0812 最终快照实机 boot 验证通过（见�
 - **全页面拖拽**：文件/文件夹拖到页面任意位置（聊天区、空白处、输入框）即加入附件；文本/链接拖拽保持浏览器默认行为
 - **选择**：输入框左侧回形针按钮 → 选择文件 / 选择文件夹
 - **气泡折叠**：发送后，消息气泡里冗长的附件路径文本块（含 `==== DSH_PASTE_INPUT_V1 ====` 标记协议）自动折叠为 📎 文件 chip；你在 chip 前后输入的文字按原顺序穿插保留（多文件发送时文字与各文件的 chip 逐段交错，chip 独占一行），悬停 chip 显示完整原始附件块（路径/清单/文件列表），点击 chip 复制完整路径
+- **图片预览**：图片/动图附件（含 GIF）悬停 chip 弹出小预览图（动图原样播放），点击 chip 打开全屏查看器——滚轮缩放（以光标为中心，20%–800%）、拖动平移、双击 1×/2×、`+`/`-`/`0`/`Esc` 快捷键、工具栏可复制完整路径；输入框待发送 chip 与气泡内已发送 chip 均支持（宿主端按所有权标记校验后回读已发送文件）
 - 发送时文件复制到 `<会话工作区>/.dsh/tmp/attachments/<session>/<send>/`，绝对路径随消息前置给模型，无权限问题
 - 设置面板：附件用量统计与按会话/工作区清理（所有权标记保护，二次确认）
 
@@ -182,7 +191,7 @@ Attached files (paths are relative to the root above):
 
 ```sh
 # 方式一：git 依赖固定 tag（公开镜像，推荐；也可用 github:lhh010/dsh-paste-input）
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.16'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.17'
 
 # 方式二：本地 link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -203,7 +212,7 @@ dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-p
 把下面这段提示词发给任意一个 DSH 会话，模型会替你完成安装：
 
 > 帮我安装 dsh-paste-input 插件（DSH 文件输入增强：粘贴/拖拽文件），步骤：
-> 1. 执行 `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.16'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
+> 1. 执行 `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.17'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
 > 2. 在 `~/.dsh/profiles/web` 下执行 `pnpm approve-builds --all`（放行构建脚本）
 > 3. 再执行一次第 1 步的安装命令
 > 4. 完成后在 `~/.dsh/profiles/web/cordis.patch.yml` 追加 - insert 插件行（id: dsh-paste-input，name: '@dsh-community/dsh-paste-input'），并提醒我硬刷新浏览器（Ctrl/Cmd+Shift+R）
