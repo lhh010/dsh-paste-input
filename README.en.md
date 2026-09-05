@@ -112,6 +112,7 @@ Paste this prompt into any DSH session and the agent installs it for you:
 - **New**: a clipboard-record persistence toggle now sits next to the "Profiles" button in the title bar (default **off**). When on, paste records mirror to `sessionStorage` - after a page reload, leftover paste-reference chips in the composer can still be sent (previously: "Attachment selection is no longer available in this browser tab").
 - **Limits**: files over 1 MiB are not persisted; the snapshot caps at roughly 3 MiB total (oversized records are skipped).
 - Turning the toggle off clears the persisted records.
+- **Granularity**: persistence is decided per paste record at creation time (toggle on + file within limits). Switching off clears already-persisted records; re-enabling does not backfill old ones; sent messages are unaffected (files already live host-side).
 
 ### 2026-08-20 · v0.1.5 - Declare DSH 0.1.1-rc.1 compatibility (real boot verification)
 
