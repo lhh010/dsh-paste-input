@@ -1,7 +1,7 @@
 {
   "name": "@dsh-community/dsh-paste-input",
-  "version": "0.1.22",
-  "description": "DSH WebUI 文件输入增强：Ctrl+V 粘贴（带首次告知弹窗）与拖拽/选择文件，发送时复制进会话工作区临时目录",
+  "version": "0.1.23",
+  "description": "DSH WebUI 文件输入增强：Ctrl+V 粘贴（带首次告知弹窗）、大段纯文本自动转 paste_text.txt 附件、拖拽/选择文件，发送时复制进会话工作区临时目录",
   "type": "module",
   "main": "lib/index.js",
   "exports": {

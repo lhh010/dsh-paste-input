@@ -80,6 +80,13 @@ hip 全链路可用；0811 与 0812 最终快照实机 boot 验证通过（见�
 
 ## 更新记录 / Changelog
 
+### 2026-09-08 · v0.1.23 — 大段文本粘贴自动转附件（基于上游 v0.1.22，PR #1）
+
+- **新功能**：在输入框粘贴**纯文本**时，超过阈值（默认 **1000 字符**，设置面板可调 关闭/1000/2000/5000）或超过 **20 行**的内容不再插入输入框，而是自动转为 `paste_text.txt` 附件芯片——复用粘贴文件全管道（`paste_image`/`paste_file` 同族命名，重名自动加 `(2)`、`(3)…` 序号，发送时复制进 `.dsh/tmp/attachments/`，气泡自动折叠）
+- **拦截位置**：document capture 阶段，先于 composer 自身的 paste 监听（兼容 Lexical contenteditable 与 textarea 两代 composer），只对落在 composer 上的粘贴生效，不影响队列编辑器/设置搜索框等其他输入
+- **设置面板**：附件设置页新增「大段文本粘贴自动转附件」阈值下拉框（localStorage 持久化）
+- 已提 PR：[lhh010/dsh-paste-input#1](https://github.com/lhh010/dsh-paste-input/pull/1)
+
 ### 2026-09-04 · v0.1.19 — 声明支持 dsh-v0.1.3-alpha.1
 
 - **验证**：0.1.3 破坏性变更集中在 host/session 侧（SessionHandle / session format v2），composer/输入面实测无影响；npm 未发布，源码宿主实机验证（粘贴入框/悬停预览/查看器正常），无需代码改动
