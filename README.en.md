@@ -218,6 +218,6 @@ Paste this prompt into any DSH session and the agent installs it for you:
 ## License
 
 MIT (includes the derivation notice for dsh-multimedia-webui-input)### 2026-09-09 · v0.1.24 — fix folding of legacy end-marker messages
-- **Fix**: session history contains two end-marker spellings (current `==== END DSH_PASTE_INPUT ====` vs the V1-suffixed variant written by older cached bundles); the parser only accepted the current form, so legacy messages never folded. Both spellings are now accepted
+- **Fix**: session history contains two end-marker spellings (current `==== END DSH_PASTE_INPUT ====` vs the V1-suffixed variant written by older cached bundles); the parser only accepted the current form, so legacy messages never folded. Both spellings are now accepted. Note: the V1 spelling is legacy-only (written by very early bundles only) and **may be dropped in a future release**
 
 
