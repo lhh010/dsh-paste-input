@@ -217,6 +217,9 @@ Paste this prompt into any DSH session and the agent installs it for you:
 
 ## License
 
+### 2026-09-10 · v0.1.25 — Declare dsh-v0.1.5-rc.2 compatibility
+- **Verification**: rc.2 has no client-plugin-facing changes and needs no code change; loaded and confirmed on a real rc.2 host (tag fb2c4b9e); paste-to-input box, hover preview, and viewer all work
+
 MIT (includes the derivation notice for dsh-multimedia-webui-input)### 2026-09-10 · v0.1.25 — Declares support for dsh-v0.1.5-rc.1
 - **Verified**: rc.1 is the first 0.1.5 release candidate, zero code delta on this plugin's client surface; published on npm, pinned-version real-host verified; baked PLUGIN_VERSION constant synced
 
