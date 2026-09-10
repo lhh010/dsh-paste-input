@@ -217,7 +217,13 @@ Paste this prompt into any DSH session and the agent installs it for you:
 
 ## License
 
-MIT (includes the derivation notice for dsh-multimedia-webui-input)### 2026-09-09 · v0.1.24 — fix folding of legacy end-marker messages
+MIT (includes the derivation notice for dsh-multimedia-webui-input)### 2026-09-10 · v0.1.25 — Declares support for dsh-v0.1.5-rc.1
+- **Verified**: rc.1 is the first 0.1.5 release candidate, zero code delta on this plugin's client surface; published on npm, pinned-version real-host verified; baked PLUGIN_VERSION constant synced
+
+### 2026-09-10 · v0.1.25 — Declares support for dsh-v0.1.5-rc.1
+- **Verified**: rc.1 is the first 0.1.5 release candidate, zero code delta on this plugin's client surface; published on npm, pinned-version real-host verified; baked PLUGIN_VERSION constant synced
+
+### 2026-09-09 · v0.1.24 — fix folding of legacy end-marker messages
 - **Fix**: session history contains two end-marker spellings (current `==== END DSH_PASTE_INPUT ====` vs the V1-suffixed variant written by older cached bundles); the parser only accepted the current form, so legacy messages never folded. Both spellings are now accepted. Note: the V1 spelling is legacy-only (written by very early bundles only) and **may be dropped in a future release**
 
 
