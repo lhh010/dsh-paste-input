@@ -24,6 +24,15 @@ const ORGS = ['dsh-external', 'lhh010', 'omdsh-dev']
 
 const pkg = JSON.parse(readFileSync('package.json', 'utf8'))
 const REPO = pkg.name.split('/').pop() ?? pkg.name
+// Release guard: the client's frozen fallback version must match package.json,
+// otherwise every installed client keeps prompting a phantom "new version"
+// (the chip compares its frozen constant against the newest GitHub tag).
+// Fail loud before pushing any mirror.
+const fallback = /PLUGIN_VERSION_FALLBACK = '(\d+\.\d+\.\d+)'/.exec(readFileSync('lib/client.js', 'utf8'))?.[1]
+if (fallback !== pkg.version) {
+  console.error(`sync-mirrors: version drift — package.json ${pkg.version} vs lib/client.js PLUGIN_VERSION_FALLBACK ${fallback ?? 'missing'}; bump them together before pushing.`)
+  process.exit(1)
+}
 const noPush = process.argv.includes('--no-push')
 
 const git = (...args) => execFileSync('git', args, { stdio: ['ignore', 'inherit', 'inherit'] })

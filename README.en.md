@@ -7,13 +7,15 @@ A file-input enhancement plugin for the DSH WebUI: **Ctrl+V paste** + **whole-pa
 Derived from [dsh-external/dsh-multimedia-webui-input](https://github.com/dsh-external/dsh-multimedia-webui-input) (MIT), adding clipboard paste input, a first-use notice dialog, and bubble attachment collapsing on top of it.
 
 > **Pick the plugin version that matches your DSH** (a mismatch crashes: common symptom `useConversation is not a function`)
-> - DSH **0.1.1-rc.2** (npm latest): install the **old** version `'@dsh-external/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.5'`
-> - DSH **0.1.2-alpha.1 / alpha.2 / alpha.3 / alpha.4 / alpha.5 / rc.1**: install the **new** version (the default command below)
+> - DSH **0.1.6-alpha.2** (npm latest): install the **new** version (the default command below)
+> - DSH **0.1.5-x / 0.1.2-alpha.x / 0.1.2-rc.1**: install the **old** version `'@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.27'`
+> - DSH **0.1.1-rc.2** (old npm): install the **oldest** version `'@dsh-external/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.5'`
+
 ## Installation (profile mode)
 
 ```sh
 # Option 1: pinned-tag git dependency (public mirror, recommended; github:lhh010/dsh-paste-input also works)
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.20'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.28'
 
 # Option 2: local link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -29,57 +31,60 @@ Append to `~/.dsh/profiles/web/cordis.patch.yml` (hot-reloaded, no restart neede
 
 > **Install tips**: pnpm 11 may block node-pty build scripts on first install — run `pnpm approve-builds --all` under `~/.dsh/profiles/web` and re-run the install; then **hard-refresh the browser** (Ctrl/Cmd+Shift+R).
 
-### Prompt install (let DSH install it)
+### 2026-09-20 · v0.1.28 — Declare dsh.bundle layer + real-version update check
 
-Paste this prompt into any DSH session and the agent installs it for you:
+- **New `cordis.patch.yml`**: the plugin ships its own bundle patch file, declared via `package.json → dsh.bundle.patch`; the host applies it automatically at the bundle layer, so users no longer need to manually maintain `~/.dsh/profiles/web/cordis.patch.yml`
+- **Version check upgrade**: no longer relies solely on a hardcoded `PLUGIN_VERSION` constant; on startup the check reads the host-loaded plugin version from the `__DSH_BOOT__` manifest (with a dev-mode `rev` fallback), comparing against the remote latest tag using the real running version — avoids false-positive update prompts during local development or un-published builds
+- **Sync**: install commands now point to `#v0.1.28`
 
-> Install the dsh-paste-input plugin (DSH file-input enhancement plugin (paste/drag files)):
-> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.20'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
-> 2. Under `~/.dsh/profiles/web`, run `pnpm approve-builds --all` (approve the build scripts)
-> 3. Re-run the install command from step 1
-> 4. Remind me to hard-refresh the browser (Ctrl/Cmd+Shift+R)
-> On errors, first check the FAQ/known limitations in the README at <https://github.com/lhh010/dsh-paste-input>.
+### 2026-09-17 · v0.1.27 — Adapt to dsh-v0.1.6-alpha.2
 
+Adapted to dsh 0.1.6-alpha.2 multi-instance refactor: the current session is now resolved via `uiSession.current` (`{ key, ctx }`) (the `sessions.list.current` field from alpha.1 was removed, previously causing paste/drop/attach-button to all show "please open a session first"); paste, drag, and attach-button paths all switched, with alpha.1 fallback retained. lib node --check all green, alpha.2 real-host verified: chips restored.
 
- `ConversationSnapshot` view refactor, `ctx.slots.inject` registration form) does not touch this plugin's self-contained bundle; install the latest tag (`#v0.1.9`) directly.
-**npm release compatibility**: compatible with the DSH npm release `@deepseek-ai/dsh@0.1.1-rc.1` (v0.1.5 real boot verification: after `dsh --profile web` starts, the boot manifest includes this plugin and `/plugins/@dsh-community/dsh-paste-input/client.js` returns 200; the `inputTriggers`/`conversation.input` facades and the four slots are unchanged on 0.1.1-rc.1) and `@deepseek-ai/dsh@0.1.0-rc.8` (verified in practice with v0.1.4; adaptation notes in the section below), while remaining compatible with `@deepseek-ai/dsh@0.0.1-rc.5` (dist-tag `next`, i.e. the npm release of the final snapshot snapshot0812; `npm exec -p @deepseek-ai/dsh@0.0.1-rc.5 -- dsh --profile web --port <port>` accesses the specified version and starts it in lib production mode), while remaining compatible with `@deepseek-ai/dsh@0.0.1-rc.2` (the npm release of snapshot0811). Tested in practice (npm rc.5 baseline): after `dsh web` starts, the `window.__DSH_BOOT__` manifest includes `@dsh-community/dsh-paste-input` (inject: `dsh-client-runtime`/`dsh-client-ui-input-trigger`/`dsh-client-ui-conversation`/`dsh-client-ui-settings`), and `/plugins/@dsh-community/dsh-paste-input/client.js` returns 200; the client half registers correctly through `window.__ModuleLoader__.load`, and the host half's `webServer` upload route loads successfully in the rc.5 consumer. This plugin has **no cordis dependency at all** (no peerDependencies; the lib build output has no cordis imports) — the 0811 cordis rename (`cordis` → `@deepseek-ai/cordis`) has zero impact on this plugin, and `npm install` needs no extra flags.
+### 2026-09-15 · v0.1.26 — Declare support for dsh-v0.1.6-alpha.1
 
-### 0.1.0-rc.8 compatibility notes (npm release `@deepseek-ai/dsh@0.1.0-rc.8`, v0.1.4)
+Declared support for dsh-v0.1.6-alpha.1 (published on npm, pinned-version real-host verified; zero code delta on this plugin's client surface, lib node --check all green, loads normally on real host).
 
-- **Input-machine reference range change (fixes broken removal)**: rc.8's input machine changed a reference occurrence's inline range from a single placeholder character to the full display text (`@` + label, see `referenceDraftText`). v0.1.3's dock removal sliced only 1 character, so after clicking × the dock chip disappeared but plain text like `📎 image.png …` remained in the composer. v0.1.4 instead uses `input.consumeToken({ kind: 'span', span: { start: occurrence.offset, end: occurrence.offset + occurrence.length, draftRev } })` (rc.8 `SessionInputShell`'s official removal verb, CAS-guarded) to remove the whole range; on older hosts without `consumeToken` it falls back to `setDraft` slicing by `occurrence.length`.
-- **Official file appearance (fixes blue @ + paperclip + blue filename)**: rc.8's `insertReference` supports the official `appearance` field (`file`/`folder`/`session`; the official `@file` reference source uses `appearance: 'file'`), and the composer inline chip is rendered by the official style (hidden @ glyph + official file icon + blue filename). v0.1.3's hand-rolled `📎 ` emoji prefix + 8-character truncated label rendered as "blue @ + paperclip + blue filename"; v0.1.4 removes the emoji prefix, uses the bare file name as the label (matching official @file references), and passes `appearance: 'file'`.
-- **Whole-chip edit protection**: the inline chip can only be deleted or replaced as one unit — its file name cannot be edited in place. A capture-phase `beforeinput` guard on the composer textarea blocks any edit that touches only part of a chip (typing inside the label, backspacing one character, replacing a partial selection) and expands the selection over the whole chip, so the next keypress removes or replaces it entirely. The guard identifies the composer via `textarea.value === draft`, leaving other inputs (queue row editors) untouched; the dock × button still removes via `consumeToken`.
-- **Slots and services unchanged**: `conversation.input.left` / `conversation.input.dock` / `conversation.input.right` (`kind: 'list'`, `scope: 'session'`) and `settings.section` remain declared on rc.8; `inputTriggers.registerSource`, `conversation.input.for(actx)` (returning the facade with `state`/`insertReference`/`consumeToken`/`setDraft`), and the host-side `webServer.register` are unchanged. Bubble collapsing (the `DSH_PASTE_INPUT_V1` marker protocol) and the upload route are unaffected.
+### 2026-09-10 · v0.1.25 — Declare dsh-v0.1.5-rc.2 compatibility
 
-### 0809 compatibility notes (verified in practice)
+- **Verification**: rc.2 has no client-plugin-facing changes and needs no code change; loaded and confirmed on a real rc.2 host (tag fb2c4b9e); paste-to-input box, hover preview, and viewer all work
 
-- **Loading mechanism change**: 0809 refactored the client plugin mechanism — the old `dsh.plugin.json` manifest + `resolveClientPath` (`packages/plugin/plugin`) were removed in favor of a **`dshClient` declaration in package.json** (`platform: 'web'`, optional `inject`/`immediately`) + `exports["./client"]` pointing at the build output; the host scans loader entries to compose the boot graph, and the Web side fetches from `/plugins/<id>/client.js`. This plugin's package.json already satisfies that declaration, no change needed.
-- The attachment message protocol (the `==== DSH_PASTE_INPUT_V1 ====` marker) and the `.dsh/tmp/attachments/<session>/<send>/` directory logic do not depend on snapshot-internal implementation details; the full chain was verified successfully in practice on 0809.
-- **Build requirement**: the 0809 host validates the build output of `dshClient` packages at activation; if missing, it throws `ClientPackageCompositionError` and **refuses to start `dsh web`** — after upgrading the snapshot or changing source code, you must re-run `pnpm run build` before starting, otherwise the browser fetches the stale `lib/client.js`.
+### 2026-09-10 · v0.1.25 — Declare support for dsh-v0.1.5-rc.1
 
-### 0810 compatibility notes (snapshot0810)
+- **Verification**: rc.1 is the first 0.1.5 release candidate, zero code delta on this plugin's client surface; published on npm, pinned-version real-host verified; baked PLUGIN_VERSION constant synced
 
-- **Metadata discovery change**: 0810's ClientModuleHostService scans the package.json of loaded plugins at startup, but only reads the **nested `dsh.client`** (`resolveMeta` in `packages/client/modules/src/index.ts`, `pkg.dsh.client`); an unread top-level `dshClient` field silently drops the plugin from the boot graph — no logs, no errors, "starts fine but no plugins". This plugin has migrated from the top-level `dshClient` to the nested `dsh.client` (inject preserved as-is); the `lib/client.js` build output is unchanged (package.json does not participate in compilation), and with a symlink install, editing the source repo takes effect immediately — no reinstall needed.
+### 2026-09-09 · v0.1.24 — Fix folding of legacy end-marker messages
 
-### 0811 compatibility notes (snapshot0811, verified in practice)
+- **Fix**: session history contains two end-marker spellings (current `==== END DSH_PASTE_INPUT ====` vs the V1-suffixed variant written by older cached bundles); the parser only accepted the current form, so legacy messages never folded. Both spellings are now accepted. Note: the V1 spelling is legacy-only (written by very early bundles only) and **may be dropped in a future release**
 
-- **The cordis rename has zero impact on this plugin**: 0811 renamed the vendored cordis from `cordis@4.0.0-rc.7` to `@deepseek-ai/cordis@4.0.1-rc.1` (all official client packages accordingly switched to importing from `@deepseek-ai/cordis`). This plugin does not import cordis (no peerDependencies, no cordis references in the lib build output), so no migration is needed.
-- **Real boot verification**: after snapshot0811 (`snapshots/20260811T152241Z`) web starts, the `window.__DSH_BOOT__` manifest includes `@dsh-community/dsh-paste-input` (inject: `dsh-client-runtime`/`dsh-client-ui-slash`/`dsh-client-ui-conversation`/`dsh-client-ui-settings`), and `/plugins/@dsh-community/dsh-paste-input/client.js` returns 200. The slots this plugin uses — `conversation.input.left`/`conversation.input.dock` (declared by `ui-conversation`) and `settings.section` (declared by `ui-settings`) — remain declared on 0811; the `slash` service and the `window.__ModuleLoader__` loading protocol are unchanged.
+### 2026-09-09 · v0.1.23 — Declare support for dsh-v0.1.5-alpha.2
 
-### 0812/final snapshot compatibility notes (snapshots/20260812T172954Z-final, verified in practice)
+- **Verification**: alpha.2 changes are sidebar document preview, model file delivery, minimal default tool adjustments, and `fs-ext` install fix — zero code delta on this plugin's client surface; published on npm, pinned-version real-host verified; baked PLUGIN_VERSION constant synced
 
-- **Client service rename: `slash` → `inputTriggers`**: the final snapshot renamed the input-trigger service from `slash` to `inputTriggers` (renamed together with the official package `@deepseek-ai/dsh-client-ui-slash` → `@deepseek-ai/dsh-client-ui-input-trigger`; the service itself and the `registerSource` API are unchanged). This plugin's `lib/client.js` has been migrated in 4 places (two inject arrays + the `ctx.get` + the `registerSource` call), and the inject list in the `dsh.client` metadata has likewise migrated from `dsh-client-ui-slash` to `dsh-client-ui-input-trigger`.
-- **Host service rename: `httpServer` → `webServer`**: the final snapshot renamed the host-side HTTP route registration service from `httpServer` to `webServer` (provided by `packages/host/webserver`; the `register({ kind: 'prefix', path, handler })` API is unchanged). This plugin's `lib/index.js` has been migrated in 2 places (the inject array + the `ctx.webServer.register` call), and the upload route is registered as usual.
-- **The cordis rename has zero impact on this plugin**: as with 0811, this plugin does not import cordis (no peerDependencies, no cordis references in the lib build output); the `cordis` → `@deepseek-ai/cordis` rename (`4.0.1-rc.4` on the npm rc.5 baseline) has zero impact, and `npm install` needs no extra flags.
-- **Real boot verification**: after the final snapshot (`snapshots/20260812T172954Z-final`) web starts, the `window.__DSH_BOOT__` manifest includes `@dsh-community/dsh-paste-input`; after the npm rc.5 consumer's `dsh web` starts, the boot manifest likewise includes this plugin (inject now shows `dsh-client-ui-input-trigger`), `/plugins/@dsh-community/dsh-paste-input/client.js` returns 200, and the host half's `webServer` upload route loads successfully. The slots this plugin uses — `conversation.input.left`/`conversation.input.dock` (declared by `ui-conversation`) and `settings.section` (declared by `ui-settings`) — remain declared on the final snapshot and rc.5; the `inputTriggers` service and the `window.__ModuleLoader__` loading protocol are unchanged.
+### 2026-09-08 · v0.1.22 — Declare support for dsh-v0.1.5-alpha.1
 
-## 更新记录 / Changelog
+- **Verification**: 0.1.5 changes are session format V3 / `ctx.agent` removal / host client-bundle service route change to `/plugins/??` composite routing — zero code delta on this plugin's client surface; published on npm, pinned-version real-host verified, no code changes needed
 
-### 2026-09-03 · v0.1.18 — Declare DSH 0.1.2-rc.1 support
+### 2026-09-05 · v0.1.21 — Declare support for dsh-v0.1.3-alpha.2
+
+- **Verification**: alpha.2 changes are all in pi-ai / Web top bar / subagent messages / host — zero code delta on this plugin's client surface; published on npm, pinned-version real-host verified, no code changes needed
+
+### 2026-09-05 · v0.1.20 — Paste-record persistence toggle (sessionStorage, default off)
+
+- **New**: a clipboard-record persistence toggle now sits next to the "Profiles" button in the title bar (default **off**). When on, paste records mirror to `sessionStorage` — after a page reload, leftover paste-reference chips in the composer can still be sent (previously: "Attachment selection is no longer available in this browser tab").
+- **Limits**: files over 1 MiB are not persisted; the snapshot caps at roughly 3 MiB total (oversized records are skipped).
+- Turning the toggle off clears the persisted records.
+- **Granularity**: persistence is decided per paste record at creation time (toggle on + file within limits). Switching off clears already-persisted records; re-enabling does not backfill old ones; sent messages are unaffected (files already live host-side).
+
+### 2026-09-04 · v0.1.19 — Declare support for dsh-v0.1.3-alpha.1
+
+- **Verification**: 0.1.3 breaking changes are on host/session side (SessionHandle / session format v2), composer/input surface unaffected in practice; npm not published, source real-host verified (paste-to-input, hover preview, viewer all work), no code changes needed
+
+### 2026-09-03 · v0.1.18 — Declare support for dsh-v0.1.2-rc.1
 
 - **Verification**: alpha.5 → rc.1 is version-bump-only upstream (252 files, zero code diff); verified live on rc.1 (hover preview / viewer working), no code changes needed
 
-### 2026-09-03 · v0.1.17 — image/GIF hover preview + click viewer (zoom & pan)
+### 2026-09-03 · v0.1.17 — Image/GIF hover preview + click viewer (zoom & pan)
 
 - **New (hover thumbnail)**: image attachments (png/jpg/jpeg/gif/webp/bmp/avif/ico) pop a small preview card on chip hover — animated GIFs play as-is. Works on both the composer's pending chips (local bytes via blob URL) and the bubble's sent chips (host reads the file back after ownership-marker validation)
 - **New (click viewer)**: clicking an image chip opens a fullscreen viewer — cursor-centered wheel zoom (20%–800%), left-drag panning, double-click toggles 1×/2×, `+`/`-`/`0`/`Esc` shortcuts, and a toolbar with the zoom percentage, reset, copy-full-path, and close; GIFs keep playing in the viewer
@@ -87,34 +92,40 @@ Paste this prompt into any DSH session and the agent installs it for you:
 - Non-image chips keep their behavior (hover shows the raw attachment block, click copies the path); the image chip's copy-path action moves into the viewer toolbar
 - **Fix (dock chip crash, latent since v0.1.16)**: the composer dock chip's remove button referenced `busy`, a variable from other components' scope — the moment a chip rendered it threw a ReferenceError and the error boundary swallowed the whole dock slot (symptom: the dock's attachment chips vanish); the dangling reference is removed
 
-### 2026-09-02 · v0.1.16 — fix AttachButton crash + version check moves to jsdelivr
+### 2026-09-02 · v0.1.16 — Fix AttachButton crash + version check moves to jsdelivr
 
 - **Fix (AttachButton crash)**: the `conversation.input.left` slot provides no owner props (no `input`), so `props.input.phase` read undefined and crashed the slot entry. Now uses optional chaining with a `'plain'` default (`add()` has its own phase guard). The dock slot's `occurrences` gets the same defensive default
 - **Fix (403 spam)**: version-check tag source moved from `api.github.com` (rate-limited, 403s unauthenticated) to `data.jsdelivr.com/v1/packages/gh/` (CDN, no rate limit, CORS-friendly)
-### 2026-09-02 · v0.1.13 — update prompt gains version routing + troubleshooting
+
+### 2026-09-02 · v0.1.15 — Declare support for dsh-v0.1.2-alpha.5
+
+- **Verification**: alpha.5 is a pure bug fix (upgrade path issue), no change to client runtime API; lib output verified
+
+### 2026-09-02 · v0.1.14 — Declare support for dsh-v0.1.2-alpha.4
+
+- **Verification**: alpha.4 has no destructive changes to the client runtime API (changelog is host-side Session events refactor only); lib output verified
+
+### 2026-09-02 · v0.1.13 — Update prompt gains version routing + troubleshooting
 
 - **Fix (update prompt)**: step 0 added (run `dsh --version` first and pick the tag per the README compatibility table) and step 3 (on install failures / version mismatch / startup errors, consult the README compatibility and known-limitations sections first); the original install steps are unchanged
-### 2026-09-01 · v0.1.12 — version check caching / 403 fallback
+
+### 2026-09-01 · v0.1.12 — Version check caching / 403 fallback
 
 - **Fix (403 spam)**: when the GitHub tags API returns 403 (rate-limited / unauthenticated), the old code re-fetched on every page load and retry, flooding the console. Verdicts are now cached in localStorage per status: OK for 10 minutes, transient network failure 60s, hard 403 for 5 minutes — inside the window the check returns the cached verdict without touching the network; a manual "retry" still forces one fetch
 - **Fallback copy**: distinguishes "network unreachable" from "GitHub refused (rate-limit / 403)" — the latter shows "version check temporarily unavailable (GitHub refused), cached" instead of misattributing it to the network
-### 2026-09-01 · v0.1.11 — version chip no longer fooled by GitHub CDN lag
+
+### 2026-09-01 · v0.1.11 — Version chip no longer fooled by GitHub CDN lag
 
 - **Fix**: in the minutes right after pushing a new tag, the GitHub tags API / raw CDN still serve the old tag, and the "already latest" chip displayed that stale REMOTE tag as the latest (e.g. running 0.1.10 while showing "latest 0.1.9"). It now shows whichever of the fetched tag and the running version is newer; the offline chip's retry path applies the same rule
-### 2026-09-01 · v0.1.10 — fix broken dock removal + same-name auto-numbering
+
+### 2026-09-01 · v0.1.10 — Fix broken dock removal + same-name auto-numbering
 
 - **Fix (removal → unavailable)**: on DSH 0.1.2-alpha the input machine's occurrence offset/length are **clipboard-projection coordinates** (a chip spans its full `[attachment: …]` text) while `consumeToken`'s span guard works in **detect-projection coordinates** (a chip is exactly one U+FFFC character) — the old code passed clipboard offsets straight through, the replace always failed, and the already-deleted record left the chip showing "unavailable" in the dock and resident in the composer. The span is now converted to detect coordinates (each earlier chip contributes length−1 fewer characters), with a setDraft whole-range slice fallback
 - **Fix (second paste errored / displaced the first)**: `insertReference`'s insertion point used `snapshot.draft.length` (clipboard-projection length); once a first attachment existed the point fell past the detect text and `The DSH composer changed before the attachment could be inserted` fired. The point is now folded into detect coordinates the same way, so consecutive pastes coexist
 - **Added (unified paste renaming)**: pasted files get a unified base name — images `paste_image.<ext>`, other files `paste_file.<ext>` (extension from the original name, falling back to the MIME map); collisions append `(2)`, `(3)`… (conflict set = live composer chips + records), and the rename carries into the upload path. **Only the paste path renames**; drops and the file/folder picker keep their real names
 - **Verification**: verified live — two consecutive screenshot pastes yield `paste_image.png` and `paste_image(2).png` side by side; dock × removal clears both views; node --check clean
-### 2026-09-05 · v0.1.20 - Paste-record persistence toggle (sessionStorage, default off)
 
-- **New**: a clipboard-record persistence toggle now sits next to the "Profiles" button in the title bar (default **off**). When on, paste records mirror to `sessionStorage` - after a page reload, leftover paste-reference chips in the composer can still be sent (previously: "Attachment selection is no longer available in this browser tab").
-- **Limits**: files over 1 MiB are not persisted; the snapshot caps at roughly 3 MiB total (oversized records are skipped).
-- Turning the toggle off clears the persisted records.
-- **Granularity**: persistence is decided per paste record at creation time (toggle on + file within limits). Switching off clears already-persisted records; re-enabling does not backfill old ones; sent messages are unaffected (files already live host-side).
-
-### 2026-08-20 · v0.1.5 - Declare DSH 0.1.1-rc.1 compatibility (real boot verification)
+### 2026-08-20 · v0.1.5 — Declare DSH 0.1.1-rc.1 compatibility (real boot verification)
 
 - **Verification**: real boot verification passed on DSH npm `0.1.1-rc.1` — the boot manifest includes this plugin and client.js returns 200; the v0.1.4 rc.8 adaptation (`consumeToken` whole-range removal, official `appearance: 'file'`, whole-chip edit protection) shows no regression on 0.1.1-rc.1 (the `inputTriggers.registerSource`, `conversation.input.for` facade, and the `conversation.input.left/dock` and `settings.section` slots are unchanged)
 
@@ -125,18 +136,18 @@ Paste this prompt into any DSH session and the agent installs it for you:
 - **Added (whole-chip edit protection)**: the inline chip's file name can no longer be edited in place (partial edits are blocked and the whole chip is auto-selected; the next keypress deletes or replaces it entirely) — see "Whole-chip edit protection" above
 - **Verification**: verified in practice on DSH npm `0.1.0-rc.8` — paste/drop → dock chip → × removal clears the composer in sync; send → copy into the attachments directory → bubble chip collapsing all work
 
-### 2026-08-13 · v0.1.3 — final snapshot service rename migration (snapshot0812 + npm rc.5)
+### 2026-08-13 · v0.1.3 — Final snapshot service rename migration (snapshot0812 + npm rc.5)
 
 - **Migration (client)**: `slash` → `inputTriggers` (4 places in lib/client.js: inject arrays ×2 + the `ctx.get` + the `registerSource` call); the `dsh.client` metadata inject migrated from `@deepseek-ai/dsh-client-ui-slash` to `@deepseek-ai/dsh-client-ui-input-trigger` — the final snapshot renamed the input-trigger service together with the official package; the service and the `registerSource` API are unchanged
 - **Migration (host)**: `httpServer` → `webServer` (2 places in lib/index.js: the inject array + the `ctx.webServer.register` call) — the final snapshot renamed the host-side HTTP route service; the `register({ kind: 'prefix', path, handler })` API is unchanged
 - **Verification**: real boot verification passed on the DSH final snapshot (`snapshots/20260812T172954Z-final`) and the npm rc.5 (`@deepseek-ai/dsh@0.0.1-rc.5`) consumer (boot manifest includes this plugin, client.js returns 200, webServer upload route loads successfully)
 
-### 2026-08-11 · v0.1.2 — client plugin metadata migration (snapshot0810)
+### 2026-08-11 · v0.1.2 — Client plugin metadata migration (snapshot0810)
 
 - **Migration**: package.json migrated from the top-level `dshClient` declaration to the nested `dsh.client` (inject preserved as-is) — 0810's ClientModuleHostService only reads `pkg.dsh.client`; the old field is silently ignored and the plugin does not enter the boot graph
 - **Verification**: real verification passed on DSH snapshot0810 (full chain: paste → copy into the attachments directory → bubble chip collapsing)
 
-### 2026-08-10 · v0.1.1 — fix misplacement of bubble-collapsed chips
+### 2026-08-10 · v0.1.1 — Fix misplacement of bubble-collapsed chips
 
 - **Fix**: when text is typed both before and after chips on send (especially multi-file sends), the collapsed file chips were mispositioned — previously all user text was merged into a single text block piled at the top, the first chip floated to the right of the first line of text due to the flex layout, and the remaining chips scattered below the text block; now they render interleaved in source order (text → chip → text → chip…), each text segment occupies its own line, and chips of adjacent attachment blocks line up side by side automatically
 - **Fix**: the collapsed-area text and chips now align with the bubble's internal 16px text indent (removing the previous extra horizontal inset and bottom gap)
@@ -184,32 +195,12 @@ Only the marked format is supported (historical unmarked messages are not collap
 - Support for pasted files varies by browser: **Chrome/Edge** only expose media such as images (screenshots, copied images) and text/HTML in the paste event — pasting after "copying files" from the file manager produces no file entries; **Firefox** supports pasting files, but likewise **does not provide absolute paths**. Browsers never expose local file paths to web pages for security reasons, so pasted content is always stored with the `filename` as a relative path — for scenarios that need the original path, use **drag & drop** or the **select files/folders** button
 - Single file ≤ 1 GiB, per batch ≤ 2 GiB, ≤ 10000 files, ≤ 64 levels
 
-## Installation (profile mode)
-
-```sh
-# Option 1: pinned-tag git dependency (public mirror, recommended; github:lhh010/dsh-paste-input also works)
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.20'
-
-# Option 2: local link
-# dsh plugin --profile web add link:/path/to/dsh-paste-input
-```
-
-Append to `~/.dsh/profiles/web/cordis.patch.yml` (hot-reloaded, no restart needed):
-
-```yaml
-- insert:
-    - id: dsh-paste-input
-      name: '@dsh-community/dsh-paste-input'
-```
-
-> **Install tips**: pnpm 11 may block node-pty build scripts on first install — run `pnpm approve-builds --all` under `~/.dsh/profiles/web` and re-run the install; then **hard-refresh the browser** (Ctrl/Cmd+Shift+R).
-
-### Prompt install (let DSH install it)
+## Prompt install (let DSH install it)
 
 Paste this prompt into any DSH session and the agent installs it for you:
 
 > Install the dsh-paste-input plugin (DSH file-input enhancement plugin (paste/drag files)):
-> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.20'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
+> 1. Run `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.28'` (the first run may fail because pnpm 11 blocks node-pty build scripts)
 > 2. Under `~/.dsh/profiles/web`, run `pnpm approve-builds --all` (approve the build scripts)
 > 3. Re-run the install command from step 1
 > 4. Remind me to hard-refresh the browser (Ctrl/Cmd+Shift+R)
@@ -217,16 +208,4 @@ Paste this prompt into any DSH session and the agent installs it for you:
 
 ## License
 
-### 2026-09-10 · v0.1.25 — Declare dsh-v0.1.5-rc.2 compatibility
-- **Verification**: rc.2 has no client-plugin-facing changes and needs no code change; loaded and confirmed on a real rc.2 host (tag fb2c4b9e); paste-to-input box, hover preview, and viewer all work
-
-MIT (includes the derivation notice for dsh-multimedia-webui-input)### 2026-09-10 · v0.1.25 — Declares support for dsh-v0.1.5-rc.1
-- **Verified**: rc.1 is the first 0.1.5 release candidate, zero code delta on this plugin's client surface; published on npm, pinned-version real-host verified; baked PLUGIN_VERSION constant synced
-
-### 2026-09-10 · v0.1.25 — Declares support for dsh-v0.1.5-rc.1
-- **Verified**: rc.1 is the first 0.1.5 release candidate, zero code delta on this plugin's client surface; published on npm, pinned-version real-host verified; baked PLUGIN_VERSION constant synced
-
-### 2026-09-09 · v0.1.24 — fix folding of legacy end-marker messages
-- **Fix**: session history contains two end-marker spellings (current `==== END DSH_PASTE_INPUT ====` vs the V1-suffixed variant written by older cached bundles); the parser only accepted the current form, so legacy messages never folded. Both spellings are now accepted. Note: the V1 spelling is legacy-only (written by very early bundles only) and **may be dropped in a future release**
-
-
+MIT (includes the derivation notice for dsh-multimedia-webui-input)

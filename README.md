@@ -7,14 +7,14 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 派生自 [dsh-external/dsh-multimedia-webui-input](https://github.com/dsh-external/dsh-multimedia-webui-input)（MIT），在其基础上新增剪贴板粘贴输入、首次告知弹窗与气泡附件折叠。
 
 > **你的 DSH 版本决定装哪个插件版本**（装错会崩：常见症状 `useConversation is not a function`）
-> - DSH **0.1.1-rc.2**（npm 最新）：装**旧版** `'@dsh-external/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.5'`
-> - DSH **0.1.2-alpha.1 / alpha.2 / alpha.3 / alpha.4 / alpha.5 / rc.1**：装**新版**（下方默认命令）
+> - DSH **0.1.6-alpha.2**（npm 最新）：装**新版**（下方默认命令）
+> - DSH **0.1.5-x / 0.1.2-alpha.x / 0.1.2-rc.1**：装**旧版** `'@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.27'`
+> - DSH **0.1.1-rc.2**（旧版 npm）：装**更旧版** `'@dsh-external/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.5'`
 ## 安装（profile 模式）
 
 ```sh
 # 方式一：git 依赖固定 tag（公开镜像，推荐；也可用 github:lhh010/dsh-paste-input）
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.27'
-
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.28'
 # 方式二：本地 link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
 ```
@@ -29,10 +29,15 @@ dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-p
 
 > **安装提示**：pnpm 11 首次安装可能拦截 node-pty 等构建脚本——在 `~/.dsh/profiles/web` 下执行 `pnpm approve-builds --all` 放行后重跑安装命令；装完**硬刷新浏览器**（Ctrl/Cmd+Shift+R）。
 
+### 2026-09-20 · v0.1.28 — 声明 dsh.bundle 层 + 实际版本更新检查
+
+- **新增 `cordis.patch.yml`**：插件自带 bundle 补丁文件，通过 `package.json → dsh.bundle.patch` 声明，宿主在 bundle 层自动应用，用户无需手动维护 `~/.dsh/profiles/web/cordis.patch.yml`
+- **版本检查升级**：不再仅依赖硬编码的 `PLUGIN_VERSION` 常量；启动时通过 `__DSH_BOOT__` 清单读取宿主实际加载的插件版本号（含 dev-mode `rev` 回退），与远端最新 tag 对比时以真实运行版本为准，避免本地开发/未发版时误报更新
+- **同步更新**：安装命令统一指向 `#v0.1.28`
+
 ### 2026-09-17 · v0.1.27 — 适配 dsh-v0.1.6-alpha.2
 
 适配 dsh 0.1.6-alpha.2 多实例重构：当前会话改由 `uiSession.current`（`{ key, ctx }`）解析（alpha.1 的 `sessions.list.current` 字段已移除，此前导致粘贴/拖拽/附件按钮全部弹「请先打开一个会话」）；粘贴、拖拽、附件按钮三条路径均已切换，alpha.1 回退保留。lib node --check 全绿，alpha.2 实机验证 chips 恢复显示。
-
 ### 2026-09-15 · v0.1.26 — 声明支持 dsh-v0.1.6-alpha.1
 
 声明支持 dsh-v0.1.6-alpha.1（npm 已发布，钉版本实机验证；client 插件面零代码差异，lib node --check 全绿，实机加载正常）。安装命令统一更新为 `#v0.1.27`。
@@ -180,7 +185,7 @@ Attached files (paths are relative to the root above):
 
 ```sh
 # 方式一：git 依赖固定 tag（公开镜像，推荐；也可用 github:lhh010/dsh-paste-input）
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.27'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.28'
 
 # 方式二：本地 link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -201,13 +206,12 @@ dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-p
 把下面这段提示词发给任意一个 DSH 会话，模型会替你完成安装：
 
 > 帮我安装 dsh-paste-input 插件（DSH 文件输入增强：粘贴/拖拽文件），步骤：
-> 1. 执行 `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.27'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
+> 1. 执行 `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.28'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
 > 2. 在 `~/.dsh/profiles/web` 下执行 `pnpm approve-builds --all`（放行构建脚本）
 > 3. 再执行一次第 1 步的安装命令
 > 4. 完成后在 `~/.dsh/profiles/web/cordis.patch.yml` 追加 - insert 插件行（id: dsh-paste-input，name: '@dsh-community/dsh-paste-input'），并提醒我硬刷新浏览器（Ctrl/Cmd+Shift+R）
 > 遇到报错先查 https://github.com/lhh010/dsh-paste-input README 的常见问题/已知限制。
 
-hip 全链路可用；0811 与 0812 最终快照实机 boot 验证通过（见下）。
 
 ## 迁移指南（DSH 0.1.1-rc.1 → 0.1.2-alpha.1）
 
@@ -245,4 +249,3 @@ hip 全链路可用；0811 与 0812 最终快照实机 boot 验证通过（见�
 - **cordis 更名与本插件零影响**：与 0811 相同，本插件不导入 cordis（无 peerDependencies、lib 构建产物无 cordis 引用），`cordis` → `@deepseek-ai/cordis` 更名（npm rc.5 基线上为 `4.0.1-rc.4`）零影响，`npm install` 无需额外参数。
 - **实机 boot 验证**：最终快照（`snapshots/20260812T172954Z-final`）web 启动后 `window.__DSH_BOOT__` 清单包含 `@dsh-community/dsh-paste-input`；npm rc.5 consumer `dsh web` 启动后 boot 清单同样包含本插件（inject 已显示 `dsh-client-ui-input-trigger`），`/plugins/@dsh-community/dsh-paste-input/client.js` 返回 200，host 半 `webServer` 上传路由加载成功。本插件使用的槽位 `conversation.input.left`/`conversation.input.dock`（`ui-conversation` 声明）与 `settings.section`（`ui-settings` 声明）在最终快照与 rc.5 上保持声明；`inputTriggers` 服务与 `window.__ModuleLoader__` 加载协议不变。
 
-## 更新记录 / Changelog

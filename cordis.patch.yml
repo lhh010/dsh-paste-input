@@ -1,0 +1,6 @@
+# Mount dsh-paste-input when this package is installed as a DSH profile bundle
+# (dsh.profile.bundles layer, applied over the profile root; the row id is the
+# patch id the plugin manager uses for enable/disable overrides).
+- insert:
+    - id: dsh-paste-input
+      name: '@dsh-community/dsh-paste-input'
