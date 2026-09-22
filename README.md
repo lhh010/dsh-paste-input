@@ -29,6 +29,16 @@ dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-p
 
 > **安装提示**：pnpm 11 首次安装可能拦截 node-pty 等构建脚本——在 `~/.dsh/profiles/web` 下执行 `pnpm approve-builds --all` 放行后重跑安装命令；装完**硬刷新浏览器**（Ctrl/Cmd+Shift+R）。
 
+## 智能版本门控更新提示 / DSH-gated update chip
+
+更新浮标会结合**当前运行的 DSH 版本**（宿主端从 dsh 安装清单读取）与仓库根的 [`compatibility.json`](compatibility.json)（版本→支持的 DSH 列表，精确匹配）判定提示形态：
+
+- 最新版支持当前 DSH → 正常「新版本 vX 可用，点击更新」；
+- 最新版需要更高 DSH、但存在支持当前 DSH 的中间新版 → 提示更新到中间版，并注明「另有 vX 需更高 DSH」；
+- 最新版需要更高 DSH、且当前 DSH 无任何可用新版 → 琥珀色信息条：「新版本 vX 支持更高 DSH 版本，当前 DSH vY 暂不可用」，不提供直接升级。
+
+兼容数据拉取失败或无该版本条目时，自动回退为旧的普通升级提示（离线安全）。**发版时需同步维护 `compatibility.json`**（与版本表/变更记录同一步骤新增一行）。
+
 ### 2026-09-17 · v0.1.27 — 适配 dsh-v0.1.6-alpha.2
 
 适配 dsh 0.1.6-alpha.2 多实例重构：当前会话改由 `uiSession.current`（`{ key, ctx }`）解析（alpha.1 的 `sessions.list.current` 字段已移除，此前导致粘贴/拖拽/附件按钮全部弹「请先打开一个会话」）；粘贴、拖拽、附件按钮三条路径均已切换，alpha.1 回退保留。lib node --check 全绿，alpha.2 实机验证 chips 恢复显示。
