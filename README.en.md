@@ -13,7 +13,7 @@ Derived from [dsh-external/dsh-multimedia-webui-input](https://github.com/dsh-ex
 
 ```sh
 # Option 1: pinned-tag git dependency (public mirror, recommended; github:lhh010/dsh-paste-input also works)
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.20'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.2.0'
 
 # Option 2: local link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -74,6 +74,14 @@ Paste this prompt into any DSH session and the agent installs it for you:
 - **Real boot verification**: after the final snapshot (`snapshots/20260812T172954Z-final`) web starts, the `window.__DSH_BOOT__` manifest includes `@dsh-community/dsh-paste-input`; after the npm rc.5 consumer's `dsh web` starts, the boot manifest likewise includes this plugin (inject now shows `dsh-client-ui-input-trigger`), `/plugins/@dsh-community/dsh-paste-input/client.js` returns 200, and the host half's `webServer` upload route loads successfully. The slots this plugin uses — `conversation.input.left`/`conversation.input.dock` (declared by `ui-conversation`) and `settings.section` (declared by `ui-settings`) — remain declared on the final snapshot and rc.5; the `inputTriggers` service and the `window.__ModuleLoader__` loading protocol are unchanged.
 
 ## 更新记录 / Changelog
+
+### 2026-09-26 · v0.2.0 — fix paste-image send failure on non-vision models
+
+- **Fix**: the official composer's paste handler also pulled the same clipboard image into its own attachment channel; on models without vision the send was rejected on that attachment, leaving this plugin's chip as a dead shell
+- **Approach**: on models without image input the host rejects the send and the composer restores the attachment ids it cleared at dispatch — the plugin watches for that restore, removes the image attachments automatically, and the plain resend then succeeds
+- **Anti-spoof**: bubble-side attachment folding now validates each marker block through the plugin's `/file` endpoint (owner marker plus declared files of a real staged send); hand-typed marker blocks no longer fold into official-looking file chips
+- **Also fixed**: the page-wide drop path referenced an undefined `sessionId`
+- **Behavior note**: the first send on a non-vision model is rejected; after the automatic cleanup the resend carries only the attachment text block and succeeds — the staged image stays on the clipboard/workspace for re-paste if needed
 
 ### 2026-09-03 · v0.1.18 — Declare DSH 0.1.2-rc.1 support
 

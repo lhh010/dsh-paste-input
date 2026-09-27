@@ -13,7 +13,7 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 
 ```sh
 # 方式一：git 依赖固定 tag（公开镜像，推荐；也可用 github:lhh010/dsh-paste-input）
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.29'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.2.0'
 
 # 方式二：本地 link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -39,6 +39,14 @@ dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-p
 
 兼容数据拉取失败或无该版本条目时，自动回退为旧的普通升级提示（离线安全）。**发版时需同步维护 `compatibility.json`**（与版本表/变更记录同一步骤新增一行）。
 
+### 2026-09-26 · v0.2.0 — 修复无视觉模型粘贴图片发送失败
+
+- **修复**：粘贴图片时，官方 composer 的粘贴处理器会把同一张剪贴板图片再收进官方附件通道；对不支持看图的模型，发送时该官方附件被模型能力校验拒绝 → 发送失败，本插件的 chip 成为空壳并提示附件不再受支持，只能手动叉掉官方图片才能发送
+- **方案**：无视觉模型无法通过图片附件的宿主校验，发送失败时 composer 会把派发时清空的附件**还原**回草稿——插件监测这一还原信号，自动移除图片附件并提示**直接重新发送**（重新发送只携带附件文本块，即可成功）
+- **防伪造**：气泡侧附件折叠增加真实性校验——marker 块指向的文件先经插件 `/file` 端点验证（要求真实发送目录的 owner marker 与文件清单声明），伪造/手打的 marker 块不再被折叠成官方样式的文件 chip，防止以假附件文本误导模型或阅读者
+- **顺带修复**：全页拖拽路径 `add(sessionId, …)` 的 `sessionId` 未定义（拖拽会以 toast 报错），改为 `current.sessionId`
+- **行为说明**：视觉模型同样不再走多模态通道收到图片本体，而是读取工作区中的暂存文件——与无视觉模型一致，且不再出现同一张图片的双重附件
+
 ### 2026-09-24 · v0.1.29 — 声明支持 dsh-v0.1.7-rc.1
 
 - **声明**：支持 dsh-v0.1.7-rc.1（零适配改动）；双 bundle `node --check` 通过
@@ -54,7 +62,7 @@ dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-p
 
 ### 2026-09-15 · v0.1.26 — 声明支持 dsh-v0.1.6-alpha.1
 
-声明支持 dsh-v0.1.6-alpha.1（npm 已发布，钉版本实机验证；client 插件面零代码差异，lib node --check 全绿，实机加载正常）。安装命令统一更新为 `#v0.1.29`。
+声明支持 dsh-v0.1.6-alpha.1（npm 已发布，钉版本实机验证；client 插件面零代码差异，lib node --check 全绿，实机加载正常）。安装命令统一更新为 `#v0.2.0`。
 
 ### 2026-09-10 · v0.1.25 — 补充声明 dsh-v0.1.5-rc.2 兼容
 - **验证**：rc.2 无 client 插件面变更，无需代码改动；rc.2 实机宿主（tag fb2c4b9e）加载确认，粘贴入框/悬停预览/查看器正常
@@ -199,7 +207,7 @@ Attached files (paths are relative to the root above):
 
 ```sh
 # 方式一：git 依赖固定 tag（公开镜像，推荐；也可用 github:lhh010/dsh-paste-input）
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.29'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.2.0'
 
 # 方式二：本地 link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -220,7 +228,7 @@ dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-p
 把下面这段提示词发给任意一个 DSH 会话，模型会替你完成安装：
 
 > 帮我安装 dsh-paste-input 插件（DSH 文件输入增强：粘贴/拖拽文件），步骤：
-> 1. 执行 `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.29'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
+> 1. 执行 `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.2.0'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
 > 2. 在 `~/.dsh/profiles/web` 下执行 `pnpm approve-builds --all`（放行构建脚本）
 > 3. 再执行一次第 1 步的安装命令
 > 4. 完成后在 `~/.dsh/profiles/web/cordis.patch.yml` 追加 - insert 插件行（id: dsh-paste-input，name: '@dsh-community/dsh-paste-input'），并提醒我硬刷新浏览器（Ctrl/Cmd+Shift+R）
