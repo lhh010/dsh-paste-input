@@ -45,13 +45,14 @@ dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-p
 
 - **声明**：dsh 版本支持面与 v0.2.5 相同；双 bundle `node --check` 通过
 
-### 2026-09-29 · v0.2.5 — 弹窗/Toast 链接改为公开 discussion
 
 - **修正**：v0.2.4 弹窗与 toast 中的跟踪链接原指向内测反馈仓（外部不可见），改为公开的 [deepseek-harness discussion #8303](https://github.com/deepseek-ai/deepseek-harness/discussions/8303)。其余与 v0.2.4 相同。
 
 ### 2026-09-29 · v0.2.4 — 桌面端防御：粘贴上传不可用时明确提示
+### v0.2.4 / v0.2.5（tag 已撤回）
 
-- **防御（桌面端）**：桌面端宿主（0.2.0-rc.2）的插件侧 sessions 视图为空，上传必然失败（上游问题 [deepseek-harness discussion #8303](https://github.com/deepseek-ai/deepseek-harness/discussions/8303)、[官方 discussion #8303](https://github.com/deepseek-ai/deepseek-harness/discussions/8303)）。本版在进入会话（桌面端检测）时弹窗一次性说明并附跟踪链接；上传失败命中 "live session not found" 时 toast 明确指引改用 Web 端，替代原先的死 chip + 发送失败。上游修复后提示自然不再触发，无需回滚。
+- 中间防御版：在桌面端弹窗提示“粘贴上传不可用”。该结论被 v0.2.6 的插件侧修复推翻（workspaceRegistry 会话解析 + base64 上传通道），误导性提示已随 tag 一并撤回（提交仍在历史中：0a9f131 / 06a02cb）。
+
 
 - **声明**：dsh 版本支持面与 v0.2.3 相同；双 bundle `node --check` 通过
 
