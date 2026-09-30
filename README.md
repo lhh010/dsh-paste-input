@@ -7,8 +7,11 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 派生自 [dsh-external/dsh-multimedia-webui-input](https://github.com/dsh-external/dsh-multimedia-webui-input)（MIT），在其基础上新增剪贴板粘贴输入、首次告知弹窗与气泡附件折叠。
 
 > **你的 DSH 版本决定装哪个插件版本**（装错会崩：常见症状 `useConversation is not a function`）
-> - DSH **0.1.1-rc.2**（npm 最新）：装**旧版** `'@dsh-external/dsh-paste-input@github:lhh010/dsh-paste-input#v0.1.5'`
-> - DSH **0.1.2-alpha.1 / alpha.2 / alpha.3 / alpha.4 / alpha.5 / rc.1**：装**新版**（下方默认命令）
+>
+> - DSH **0.1.2-alpha.1 ~ 0.2.0-rc.2**：装**新版**（下方默认命令；各 DSH 版本对应的插件 tag 见下方变更记录）
+> - 更旧的 DSH（0.1.1-rc.2 及以前）：**无可用版本**
+>
+
 ## 安装（profile 模式）
 
 ```sh
