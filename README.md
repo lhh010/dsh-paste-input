@@ -15,8 +15,8 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 ## 安装（profile 模式）
 
 ```sh
-# 方式一：git 依赖固定 tag（公开镜像，推荐；也可用 github:lhh010/dsh-paste-input）
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.2.8'
+# 方式一：git 依赖固定 tag（公开镜像，推荐；也可用 github:dsh-external/dsh-paste-input）
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:dsh-external/dsh-paste-input#v0.2.8'
 
 # 方式二：本地 link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -61,8 +61,9 @@ dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-p
 
 ### 2026-10-08 · v0.2.8 — 修复：中途粘贴新图片时既有附件被误清理
 
-- **修复**：在已有附件与文字之间（光标处）粘贴新图片时，`insertReference` 触发的 draft 重排会短暂移除旧 occurrences，chip 存活订阅在间隙判定旧 record 已消失并立即删除——既有附件静默失效，发送时模型只看到最后一张。现在未提交的 record 也获得 150ms 宽限期（与已提交 record 的 settleTimer 同模式），重排后重新检查存活再决定是否清理。
-- **已知限制**：新粘贴的附件仍始终插入在文本末尾（`detectEnd` 计算），不受光标位置影响——与 v0.2.7 行为一致，不影响正确性。
+- **根因**：`add()` 在 draft 末尾无空格时调用 `input.setDraft()` 追加空格——但 `setDraft` 替换整个 draft 文本并**销毁所有 chip 的 occurrence 绑定**。用户粘贴 3 张图后打字（draft 末尾非空格），再粘贴第 4 张时 `setDraft` 先行清除了前 3 张的 occurrences，订阅判定 `alive=false`，records 被清理——发送时模型只看到最后一张（磁盘证据：batch 目录只有 `paste_image(4).png`）。
+- **修复**：移除 `setDraft` 尾部空格调用（美观不值得销毁 occurrence 绑定）；另为未提交 record 加 150ms `vanishTimer` 宽限期作为纵深防御。
+- **已知限制**：新粘贴的附件仍始终插入在文本末尾，不受光标位置影响——不影响正确性。
 - 双 bundle `node --check` 通过。
 
 ### 2026-10-04 · v0.2.7 — 声明支持 dsh-v0.2.1-alpha.1
@@ -248,8 +249,8 @@ Attached files (paths are relative to the root above):
 ## 安装（profile 模式）
 
 ```sh
-# 方式一：git 依赖固定 tag（公开镜像，推荐；也可用 github:lhh010/dsh-paste-input）
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.2.8'
+# 方式一：git 依赖固定 tag（公开镜像，推荐；也可用 github:dsh-external/dsh-paste-input）
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:dsh-external/dsh-paste-input#v0.2.8'
 
 # 方式二：本地 link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -270,11 +271,11 @@ dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-p
 把下面这段提示词发给任意一个 DSH 会话，模型会替你完成安装：
 
 > 帮我安装 dsh-paste-input 插件（DSH 文件输入增强：粘贴/拖拽文件），步骤：
-> 1. 执行 `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.2.8'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
+> 1. 执行 `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:dsh-external/dsh-paste-input#v0.2.8'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
 > 2. 在 `~/.dsh/profiles/web` 下执行 `pnpm approve-builds --all`（放行构建脚本）
 > 3. 再执行一次第 1 步的安装命令
 > 4. 完成后在 `~/.dsh/profiles/web/cordis.patch.yml` 追加 - insert 插件行（id: dsh-paste-input，name: '@dsh-community/dsh-paste-input'），并提醒我硬刷新浏览器（Ctrl/Cmd+Shift+R）
-> 遇到报错先查 https://github.com/lhh010/dsh-paste-input README 的常见问题/已知限制。
+> 遇到报错先查 https://github.com/dsh-external/dsh-paste-input README 的常见问题/已知限制。
 
 hip 全链路可用；0811 与 0812 最终快照实机 boot 验证通过（见下）。
 
