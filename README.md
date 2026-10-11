@@ -316,3 +316,7 @@ hip 全链路可用；0811 与 0812 最终快照实机 boot 验证通过（见�
 - **实机 boot 验证**：最终快照（`snapshots/20260812T172954Z-final`）web 启动后 `window.__DSH_BOOT__` 清单包含 `@dsh-community/dsh-paste-input`；npm rc.5 consumer `dsh web` 启动后 boot 清单同样包含本插件（inject 已显示 `dsh-client-ui-input-trigger`），`/plugins/@dsh-community/dsh-paste-input/client.js` 返回 200，host 半 `webServer` 上传路由加载成功。本插件使用的槽位 `conversation.input.left`/`conversation.input.dock`（`ui-conversation` 声明）与 `settings.section`（`ui-settings` 声明）在最终快照与 rc.5 上保持声明；`inputTriggers` 服务与 `window.__ModuleLoader__` 加载协议不变。
 
 ## 更新记录 / Changelog
+### 2026-10-11 · v0.2.9 — 声明支持 dsh-v0.2.1-alpha.2
+
+- **声明**：支持 dsh-v0.2.1-alpha.2（升级实机验证：web profile `--dump-config` 全插件行加载、peer 校验零错误；宿主启动监听正常；零适配改动）；双 bundle `node --check` 通过
+

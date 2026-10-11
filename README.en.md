@@ -75,6 +75,10 @@ Paste this prompt into any DSH session and the agent installs it for you:
 
 ## 更新记录 / Changelog
 
+### 2026-10-11 · v0.2.9 — declare dsh-v0.2.1-alpha.2 support
+
+- **Declaration**: supports dsh-v0.2.1-alpha.2 (verified on the real web profile: `--dump-config` loads every plugin row with zero peer errors; host boots and listens; no adaptation changes); both bundles pass `node --check`
+
 ### 2026-09-26 · v0.2.0 — fix paste-image send failure on non-vision models
 
 - **Fix**: the official composer's paste handler also pulled the same clipboard image into its own attachment channel; on models without vision the send was rejected on that attachment, leaving this plugin's chip as a dead shell
