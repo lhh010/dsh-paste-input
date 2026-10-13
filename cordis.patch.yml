@@ -1,0 +1,4 @@
+# The dsh-paste-input bundle adds clipboard image/file staging to a DSH Web profile. Installed as one profile layer: the loader row scans for the dshClient declaration and mounts the client bundle in the browser.
+- insert:
+    - id: dsh-paste-input
+      name: '@dsh-community/dsh-paste-input'

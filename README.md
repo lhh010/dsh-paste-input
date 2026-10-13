@@ -14,9 +14,12 @@ DSH WebUI 文件输入增强插件：**Ctrl+V 粘贴** + **全页面拖拽** + *
 
 ## 安装（profile 模式）
 
+> **安装方式（v0.2.10 起自动挂载）**：本包自 v0.2.10 起自带 `cordis.patch.yml` 并声明 `dsh.bundle.patch`——`dsh plugin --profile web add` 安装后**自动注册 profile 层并挂载**，不再需要手写 `insert` 配置行（固定旧 tag 的部署仍需）。**GUI 注意**：插件页「添加插件」只接受注册表包名或本地目录路径；`name@github:owner/repo#tag` 是 pnpm 别名规格（CLI 专用），粘进 GUI 会报 `ERR_PNPM_INVALID_PACKAGE_NAME`——GUI 请克隆后用本地目录路径，或等 npm 发布后用包名。
+
+
 ```sh
 # 方式一：git 依赖固定 tag（公开镜像，推荐；也可用 github:lhh010/dsh-paste-input）
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.2.8'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.2.10'
 
 # 方式二：本地 link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -105,7 +108,7 @@ dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-p
 
 ### 2026-09-15 · v0.1.26 — 声明支持 dsh-v0.1.6-alpha.1
 
-声明支持 dsh-v0.1.6-alpha.1（npm 已发布，钉版本实机验证；client 插件面零代码差异，lib node --check 全绿，实机加载正常）。安装命令统一更新为 `#v0.2.8`。
+声明支持 dsh-v0.1.6-alpha.1（npm 已发布，钉版本实机验证；client 插件面零代码差异，lib node --check 全绿，实机加载正常）。安装命令统一更新为 `#v0.2.10`。
 
 ### 2026-09-10 · v0.1.25 — 补充声明 dsh-v0.1.5-rc.2 兼容
 - **验证**：rc.2 无 client 插件面变更，无需代码改动；rc.2 实机宿主（tag fb2c4b9e）加载确认，粘贴入框/悬停预览/查看器正常
@@ -250,7 +253,7 @@ Attached files (paths are relative to the root above):
 
 ```sh
 # 方式一：git 依赖固定 tag（公开镜像，推荐；也可用 github:lhh010/dsh-paste-input）
-dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.2.8'
+dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.2.10'
 
 # 方式二：本地 link
 # dsh plugin --profile web add link:/path/to/dsh-paste-input
@@ -271,7 +274,7 @@ dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-p
 把下面这段提示词发给任意一个 DSH 会话，模型会替你完成安装：
 
 > 帮我安装 dsh-paste-input 插件（DSH 文件输入增强：粘贴/拖拽文件），步骤：
-> 1. 执行 `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.2.8'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
+> 1. 执行 `dsh plugin --profile web add '@dsh-community/dsh-paste-input@github:lhh010/dsh-paste-input#v0.2.10'`（首次可能被 pnpm 11 拦截 node-pty 构建脚本而失败）
 > 2. 在 `~/.dsh/profiles/web` 下执行 `pnpm approve-builds --all`（放行构建脚本）
 > 3. 再执行一次第 1 步的安装命令
 > 4. 完成后在 `~/.dsh/profiles/web/cordis.patch.yml` 追加 - insert 插件行（id: dsh-paste-input，name: '@dsh-community/dsh-paste-input'），并提醒我硬刷新浏览器（Ctrl/Cmd+Shift+R）
@@ -316,6 +319,11 @@ hip 全链路可用；0811 与 0812 最终快照实机 boot 验证通过（见�
 - **实机 boot 验证**：最终快照（`snapshots/20260812T172954Z-final`）web 启动后 `window.__DSH_BOOT__` 清单包含 `@dsh-community/dsh-paste-input`；npm rc.5 consumer `dsh web` 启动后 boot 清单同样包含本插件（inject 已显示 `dsh-client-ui-input-trigger`），`/plugins/@dsh-community/dsh-paste-input/client.js` 返回 200，host 半 `webServer` 上传路由加载成功。本插件使用的槽位 `conversation.input.left`/`conversation.input.dock`（`ui-conversation` 声明）与 `settings.section`（`ui-settings` 声明）在最终快照与 rc.5 上保持声明；`inputTriggers` 服务与 `window.__ModuleLoader__` 加载协议不变。
 
 ## 更新记录 / Changelog
+### 2026-10-13 · v0.2.10 — 自带 bundle 声明：安装即自动挂载
+
+- **修复**：**自带 bundle 声明**：补齐 `cordis.patch.yml` 并声明 `dsh.bundle.patch`——`dsh plugin --profile web add` 装完自动注册并挂载 profile 层，不再需要手写 insert 行（社区反馈「GUI 安装后不生效」的根因）；双 bundle `node --check` 通过
+
+
 ### 2026-10-11 · v0.2.9 — 声明支持 dsh-v0.2.1-alpha.2
 
 - **声明**：支持 dsh-v0.2.1-alpha.2（升级实机验证：web profile `--dump-config` 全插件行加载、peer 校验零错误；宿主启动监听正常；零适配改动）；双 bundle `node --check` 通过
