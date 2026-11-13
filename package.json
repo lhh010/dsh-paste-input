@@ -26,7 +26,8 @@
     "lib",
     "LICENSE",
     "README.md",
-    "cordis.patch.yml"
+    "cordis.patch.yml",
+    "locale"
   ],
   "license": "MIT"
 }

@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Paste Input (dsh-paste-input)",
+    "description": "Rich file input: Ctrl+V paste, drag & drop, and file picking with image preview, zoom viewer, and anti-forgery checks; strips images for non-vision models."
+  }
+}
